@@ -1,0 +1,635 @@
+{
+  "label": "pap-draft-v1",
+  "timestamp": "2026-03-07T12:33:17.360055+00:00",
+  "notes": "First draft PAP, data collected but not analyzed",
+  "form": {
+    "metadata": {
+      "template_name": "OSF Preregistration",
+      "source_path": "/home/ignacio/Dropbox/Workbench/research-anvil/01-Active/Trait-Aggression/design/prereg/OSF Preregistration.docx"
+    },
+    "sections": {
+      "metadata": {
+        "slug": "metadata",
+        "title": "Metadata",
+        "para_index": 9,
+        "fields": {
+          "title": {
+            "slug": "title",
+            "title": "Title*",
+            "required": true,
+            "section_slug": "metadata",
+            "prompt_text": "",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "Aggressive Individuals Vote for Far-Right Candidates: Evidence from the United States and Brazil"
+            },
+            "table_index": 2,
+            "para_indices": [
+              10
+            ]
+          },
+          "description": {
+            "slug": "description",
+            "title": "Description*",
+            "required": true,
+            "section_slug": "metadata",
+            "prompt_text": "",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "This study tests whether trait aggression—a stable personality disposition toward hostile cognition, affect, and behavior—predicts vote choice for populist far-right candidates. We leverage four independent survey samples spanning two countries (United States and Brazil) and four election cycles (2016, 2020, 2022, 2024). The primary outcome is binary vote choice for the far-right candidate (Donald Trump in the US; Jair Bolsonaro in Brazil). Secondary outcomes include support for political violence and undemocratic attitudes, measured in a three-arm randomized experiment embedded in the US 2024 survey.\n\nWe hypothesize that trait aggression has a direct positive effect on far-right vote choice, and that this relationship is partially mediated by anger and policy attitudes and moderated by partisan identity. Analyses also examine the role of Social Dominance Orientation (SDO) and Need for Chaos as competing or complementary predictors."
+            },
+            "table_index": 3,
+            "para_indices": [
+              13
+            ]
+          },
+          "contributors": {
+            "slug": "contributors",
+            "title": "Contributors*",
+            "required": true,
+            "section_slug": "metadata",
+            "prompt_text": "",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "[Author names redacted for blinded preregistration]"
+            },
+            "table_index": 4,
+            "para_indices": [
+              16
+            ]
+          },
+          "license": {
+            "slug": "license",
+            "title": "License*",
+            "required": true,
+            "section_slug": "metadata",
+            "prompt_text": "Select one. You can read more about licenses in our help guides.\nNo license\nGNU Lesser General Public License (LGPL) 3.0\nBSD 3-Clause \"New\"/\"Revised\" License\nBSD 2-Clause \"Simplified\" License\nGNU Lesser General Public License (LGPL) 2.1\nCC-By Attribution 4.0 International\nArtistic License 2.0\nCC0 1.0 Universal\nApache License 2.0\nMozilla Public License 2.0\nAcademic Free License (AFL) 3.0\nEclipse Public License 1.0\nMIT License\nGNU General Public License (GPL) 3.0\nGNU General Public License (GPL) 2.0\nCC-By Attribution-ShareAlike 4.0 International\nCC-By Attribution-NonCommercial-NoDerivatives 4.0 International",
+            "response_type": "radio",
+            "response": {
+              "type": "radio",
+              "selected": null,
+              "options": [
+                "No license",
+                "GNU Lesser General Public License (LGPL) 3.0",
+                "BSD 3-Clause \"New\"/\"Revised\" License",
+                "BSD 2-Clause \"Simplified\" License",
+                "GNU Lesser General Public License (LGPL) 2.1",
+                "CC-By Attribution 4.0 International",
+                "Artistic License 2.0",
+                "CC0 1.0 Universal",
+                "Apache License 2.0",
+                "Mozilla Public License 2.0",
+                "Academic Free License (AFL) 3.0",
+                "Eclipse Public License 1.0",
+                "MIT License",
+                "GNU General Public License (GPL) 3.0",
+                "GNU General Public License (GPL) 2.0",
+                "CC-By Attribution-ShareAlike 4.0 International",
+                "CC-By Attribution-NonCommercial-NoDerivatives 4.0 International"
+              ]
+            },
+            "table_index": null,
+            "para_indices": [
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37
+            ]
+          },
+          "subject": {
+            "slug": "subject",
+            "title": "Subject*",
+            "required": true,
+            "section_slug": "metadata",
+            "prompt_text": "Our system uses the bepress taxonomy. Please select as many subjects as you please. Note, the more detailed and inclusive you are in your response makes it easier for others to find your work.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": ""
+            },
+            "table_index": null,
+            "para_indices": [
+              40,
+              41
+            ]
+          },
+          "tags": {
+            "slug": "tags",
+            "title": "Tags",
+            "required": false,
+            "section_slug": "metadata",
+            "prompt_text": "",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": ""
+            },
+            "table_index": null,
+            "para_indices": [
+              43
+            ]
+          }
+        }
+      },
+      "study_information": {
+        "slug": "study_information",
+        "title": "Study Information",
+        "para_index": 45,
+        "fields": {
+          "hypotheses": {
+            "slug": "hypotheses",
+            "title": "Hypotheses*",
+            "required": true,
+            "section_slug": "study_information",
+            "prompt_text": "List specific, concise, and testable hypotheses. Please state if the hypotheses are directional or non-directional. If directional, state the direction. A predicted effect is also appropriate here. If a specific interaction or moderation is important to your research, you can list that as a separate hypothesis.\nExample: If taste affects preference, then mean preference indices will be higher with higher concentrations of sugar.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "H1 (Direct effect): Individuals higher in trait aggression are more likely to vote for far-right candidates (Trump in the US, Bolsonaro in Brazil), controlling for demographics and political covariates. This relationship is expected to hold across all four samples.\n\nH2 (Mediation — Anger/Policy): The effect of trait aggression on far-right vote choice is partially mediated by anger toward the political system and policy preferences aligned with far-right platforms (e.g., punitiveness, nativism).\n\nH3 (Moderation — Partisan identity): Partisan identity moderates the aggression–vote link. Specifically, among individuals with weak or no partisan attachment, trait aggression will be a stronger predictor of far-right vote choice than among strong partisans, for whom party loyalty already determines vote choice.\n\nH4 (Incremental validity): Trait aggression predicts far-right vote choice above and beyond Social Dominance Orientation (SDO) and Need for Chaos.\n\nH5 (Experimental — Political violence): In the US 2024 experiment, higher trait aggression will predict greater support for political violence and undemocratic attitudes, and this effect will be amplified by the electoral fraud treatment condition relative to the loss and control conditions.\n\nAll hypotheses are directional: higher trait aggression → greater probability of far-right vote / higher violence support."
+            },
+            "table_index": 5,
+            "para_indices": [
+              47,
+              48,
+              49
+            ]
+          }
+        }
+      },
+      "design_plan": {
+        "slug": "design_plan",
+        "title": "Design Plan",
+        "para_index": 52,
+        "fields": {
+          "study_type": {
+            "slug": "study_type",
+            "title": "Study type*",
+            "required": true,
+            "section_slug": "design_plan",
+            "prompt_text": "Please select one of the following statements.\nExperiment - A researcher randomly assigns treatments to study subjects, this includes field or lab experiments. This is also known as an intervention experiment and includes randomized controlled trials.\nObservational Study - Data is collected from study subjects that are not randomly assigned to a treatment. This includes surveys, “natural experiments,” and regression discontinuity designs.\nMeta-Analysis - A systematic review of published studies.\nOther",
+            "response_type": "radio",
+            "response": {
+              "type": "radio",
+              "selected": "Observational Study - Data is collected from study subjects that are not randomly assigned to a treatment. This includes surveys, \"natural experiments,\" and regression discontinuity designs.",
+              "options": [
+                "Experiment - A researcher randomly assigns treatments to study subjects, this includes field or lab experiments. This is also known as an intervention experiment and includes randomized controlled trials.",
+                "Observational Study - Data is collected from study subjects that are not randomly assigned to a treatment. This includes surveys, \"natural experiments,\" and regression discontinuity designs.",
+                "Meta-Analysis - A systematic review of published studies.",
+                "Other"
+              ]
+            },
+            "table_index": null,
+            "para_indices": [
+              55,
+              56,
+              57,
+              58,
+              59,
+              60
+            ]
+          },
+          "blinding": {
+            "slug": "blinding",
+            "title": "Blinding*",
+            "required": true,
+            "section_slug": "design_plan",
+            "prompt_text": "Blinding describes who is aware of the experimental manipulations within a study. Mark all that apply.\nNo blinding is involved in this study.\nFor studies that involve human subjects, they will not know the treatment group to which they have been assigned.\nPersonnel who interact directly with the study subjects (either human or non-human subjects) will not be aware of the assigned treatments. (Commonly known as “double blind”)\nPersonnel who analyze the data collected from the study are not aware of the treatment applied to any given group.",
+            "response_type": "multi_select",
+            "response": {
+              "type": "multi_select",
+              "selections": {
+                "No blinding is involved in this study.": true,
+                "For studies that involve human subjects, they will not know the treatment group to which they have been assigned.": false,
+                "Personnel who interact directly with the study subjects (either human or non-human subjects) will not be aware of the assigned treatments. (Commonly known as \"double blind\")": false,
+                "Personnel who analyze the data collected from the study are not aware of the treatment applied to any given group.": false
+              }
+            },
+            "table_index": null,
+            "para_indices": [
+              64,
+              65,
+              66,
+              67,
+              68,
+              69
+            ]
+          },
+          "additional_blinding": {
+            "slug": "additional_blinding",
+            "title": "Is there any additional blinding in this study?",
+            "required": false,
+            "section_slug": "design_plan",
+            "prompt_text": "",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "The primary analyses concern observational survey data and do not involve blinding. The embedded experiment in the US 2024 sample uses random assignment to treatment conditions (fraud, loss, control); respondents were not informed of condition labels but were aware they were reading a hypothetical scenario."
+            },
+            "table_index": 6,
+            "para_indices": [
+              72
+            ]
+          },
+          "study_design": {
+            "slug": "study_design",
+            "title": "Study design*",
+            "required": true,
+            "section_slug": "design_plan",
+            "prompt_text": "Describe your study design. The key is to be as detailed as is necessary given the specific parameters of the design. There may be some overlap between this question and the following questions. That is OK, as long as sufficient detail is given in one of the areas to provide all of the requested information. Examples include two-group, factorial, randomized block, and repeated measures. Is it a between (unpaired), within-subject (paired), or mixed design? Describe any counterbalancing required.\nExample: We have a between subjects design with 1 factor (sugar by mass) with 4 levels.\nMore info: This question has a variety of possible answers. The key is for a researcher to be as detailed as is necessary given the specifics of their design. Be careful to determine if every parameter has been specified in the description of the study design. There may be some overlap between this question and the following questions. That is OK, as long as sufficient detail is given in one of the areas to provide all of the requested information. For example, if the study design describes a complete factorial, 2 X 3 design and the treatments and levels are specified previously, you do not have to repeat that information.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "The study has two components:\n\n1. OBSERVATIONAL COMPONENT (all four samples): Cross-sectional surveys measuring trait aggression and vote choice for far-right candidates. Each sample is analyzed independently and results are compared across samples for robustness.\n\n   - Brazil 2023 (N = 1,004): Retrospective vote for Bolsonaro in 2022 second-round election.\n   - US 2024 (N = 933): Prospective vote intention for the 2024 presidential election.\n   - US 2017 CCES module (Kalmoe & Mason, N ≈ 1,000): Retrospective vote for Trump in 2016.\n   - US 2020 Zeitzoff (N = 1,400): Hypothetical vote intention.\n\n2. EXPERIMENTAL COMPONENT (US 2024 only): Between-subjects, three-arm randomized design. After completing the observational survey, respondents were randomly assigned to one of three conditions:\n   - FRAUD: Imagine preferred candidate loses and alleges electoral fraud.\n   - LOSS: Imagine preferred candidate loses (no fraud allegation).\n   - CONTROL: Think about the presidential election generally.\n\n   Post-treatment outcomes: support for political violence (0–100 slider), undemocratic attitudes (0–100 slider), and political trust (5-point scale)."
+            },
+            "table_index": 7,
+            "para_indices": [
+              76,
+              77,
+              78,
+              79
+            ]
+          },
+          "randomization": {
+            "slug": "randomization",
+            "title": "Randomization",
+            "required": false,
+            "section_slug": "design_plan",
+            "prompt_text": "If you are doing a randomized study, state how you will randomize, and at what level. Typical randomization techniques include: simple, block, stratified, and adaptive covariate randomization. If randomization is required for the study, the method should be specified here, not simply the source of random numbers.\nExample: We will use block randomization, where each participant will be randomly assigned to one of the four equally sized, predetermined blocks. The random number list used to create these four blocks will be created using the web applications available at http://random.org.\nMore info: Typical randomization techniques include: simple, block, stratified, and adaptive covariate randomization. If randomization is required for the study, the method should be specified here, not simply the source of random numbers.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "For the experimental component (US 2024 only): Simple randomization into three equally sized groups (fraud, loss, control). Randomization was implemented programmatically by the Connect survey platform at the individual respondent level."
+            },
+            "table_index": 8,
+            "para_indices": [
+              85,
+              86,
+              87,
+              88
+            ]
+          }
+        }
+      },
+      "sampling_plan": {
+        "slug": "sampling_plan",
+        "title": "Sampling Plan",
+        "para_index": 91,
+        "fields": {
+          "existing_data": {
+            "slug": "existing_data",
+            "title": "Existing data*",
+            "required": true,
+            "section_slug": "sampling_plan",
+            "prompt_text": "Preregistration is designed to make clear the distinction between confirmatory tests, specified prior to seeing the data, and exploratory analyses conducted after observing the data. Therefore, creating a research plan in which existing data will be used presents unique challenges. Please select the description that best describes your situation. See https://cos.io/prereg for more information.\nRegistration prior to creation of data: As of the date of submission of this research plan for preregistration, the data have not yet been collected, created, or realized.\nRegistration prior to any human observation of the data: As of the date of submission, the data exist but have not yet been quantified, constructed, observed, or reported by anyone - including individuals that are not associated with the proposed study. Examples include museum specimens that have not been measured and data that have been collected by non-human collectors and are inaccessible.\nRegistration prior to accessing the data: As of the date of submission, the data exist, but have not been accessed by you or your collaborators. Commonly, this includes data that has been collected by another researcher or institution.\nRegistration prior to analysis of the data: As of the date of submission, the data exist and you have accessed it, though no analysis has been conducted related to the research plan (including calculation of summary statistics). A common situation for this scenario when a large dataset exists that is used for many different studies over time, or when a data set is randomly split into a sample for exploratory analyses, and the other section of data is reserved for later confirmatory data analysis.\nRegistration following analysis of the data: As of the date of submission, you have accessed and analyzed some of the data relevant to the research plan. This includes preliminary analysis of variables, calculation of descriptive statistics, and observation of data distributions. Please see cos.io/prereg for more information.",
+            "response_type": "radio",
+            "response": {
+              "type": "radio",
+              "selected": "Registration prior to analysis of the data: As of the date of submission, the data exist and you have accessed it, though no analysis has been conducted related to the research plan (including calculation of summary statistics). A common situation for this scenario when a large dataset exists that is used for many different studies over time, or when a data set is randomly split into a sample for exploratory analyses, and the other section of data is reserved for later confirmatory data analysis.",
+              "options": [
+                "Registration prior to creation of data: As of the date of submission of this research plan for preregistration, the data have not yet been collected, created, or realized.",
+                "Registration prior to any human observation of the data: As of the date of submission, the data exist but have not yet been quantified, constructed, observed, or reported by anyone - including individuals that are not associated with the proposed study. Examples include museum specimens that have not been measured and data that have been collected by non-human collectors and are inaccessible.",
+                "Registration prior to accessing the data: As of the date of submission, the data exist, but have not been accessed by you or your collaborators. Commonly, this includes data that has been collected by another researcher or institution.",
+                "Registration prior to analysis of the data: As of the date of submission, the data exist and you have accessed it, though no analysis has been conducted related to the research plan (including calculation of summary statistics). A common situation for this scenario when a large dataset exists that is used for many different studies over time, or when a data set is randomly split into a sample for exploratory analyses, and the other section of data is reserved for later confirmatory data analysis.",
+                "Registration following analysis of the data: As of the date of submission, you have accessed and analyzed some of the data relevant to the research plan. This includes preliminary analysis of variables, calculation of descriptive statistics, and observation of data distributions. Please see cos.io/prereg for more information."
+              ]
+            },
+            "table_index": null,
+            "para_indices": [
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100
+            ]
+          },
+          "explanation_existing_data": {
+            "slug": "explanation_existing_data",
+            "title": "Explanation of existing data",
+            "required": false,
+            "section_slug": "sampling_plan",
+            "prompt_text": "If you indicate that you will be using some data that already exist in this study, please describe the steps you have taken to assure that you are unaware of any patterns or summary statistics in the data. This may include an explanation of how access to the data has been limited, who has observed the data, or how you have avoided observing any analysis of the specific data you will use in your study.\nExample: An appropriate instance of using existing data would be collecting a sample size much larger than is required for the study, using a small portion of it to conduct exploratory analysis, and then registering one particular analysis that showed promising results. After registration, conduct the specified analysis on that part of the dataset that had not been investigated by the researcher up to that point.\nMore info: An appropriate instance of using existing data would be collecting a sample size much larger than is required for the study, using a small portion of it to conduct exploratory analysis, and then registering one particular analysis that showed promising results. After registration, conduct the specified analysis on that part of the dataset that had not been investigated by the researcher up to that point.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "All four datasets have been collected and cleaned, but no hypothesis-testing analyses have been performed. Specifically:\n\n- Brazil 2023: Collected October 2023 via Opinion Box. Data cleaned and codebook prepared. No regressions, correlations, or descriptive analyses of aggression–vote relationships have been run.\n- US 2024: Collected October 2024 via Connect. Data cleaned, variables reverse-coded, and codebook prepared. No analysis conducted.\n- CCES 2017: Secondary data from Kalmoe & Mason (2019). Accessed but not analyzed for this project.\n- Zeitzoff 2020: Secondary data. Accessed but not analyzed for this project.\n\nData cleaning operations performed to date: variable renaming, reverse-coding of Likert items (trait aggression, Need for Chaos), construction of binary vote-choice indicators, and demographic variable harmonization across datasets. These operations are documented in codebooks and replication scripts but involve no examination of bivariate or multivariate relationships between aggression and vote choice."
+            },
+            "table_index": 9,
+            "para_indices": [
+              104,
+              105,
+              106,
+              107
+            ]
+          },
+          "data_collection_procedures": {
+            "slug": "data_collection_procedures",
+            "title": "Data collection procedures*",
+            "required": true,
+            "section_slug": "sampling_plan",
+            "prompt_text": "Please describe the process by which you will collect your data and your inclusion and exclusion criteria. If you are using human subjects, this should include the population from which you obtain subjects, recruitment efforts, payment for participation, how subjects will be selected for eligibility from the initial pool, and your study timeline. For studies that don't include human subjects, include information about how you will collect samples, duration of data gathering efforts, source or location of samples, or batch numbers you will use.\nExample: Participants will be recruited through advertisements at local pastry shops. Participants will be paid $10 for agreeing to participate (raised to $30 if our sample size is not reached within 15 days of beginning recruitment). Participants must be at least 18 years old and be able to eat the ingredients of the pastries.\nMore information: The answer to this question requires a specific set of instructions so that another person could repeat the data collection procedures and recreate the study population. Alternatively, if the study population would be unable to be reproduced because it relies on a specific set of circumstances unlikely to be recreated (e.g., a community of people from a specific time and location), the criteria and methods for creating the group and the rationale for this unique set of subjects should be clear.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "Brazil 2023: 1,004 Brazilian adults recruited via Opinion Box, an online survey panel. Inclusion criteria: age ≥ 18, Brazilian resident. The survey was fielded in Portuguese in October 2023, approximately one year after the 2022 presidential election second round.\n\nUS 2024: 933 US adults recruited via Connect (cloud research platform). Inclusion criteria: age ≥ 18, US resident. Fielded in October 2024, weeks before the November 2024 presidential election. Includes an embedded experiment (3 conditions) administered after the main survey.\n\nCCES 2017 module: Stratified national sample of approximately 1,000 US adults conducted by YouGov as part of the 2017 Cooperative Congressional Election Study. Replication data from Kalmoe & Mason (2019).\n\nZeitzoff 2020: Approximately 1,400 US residents recruited via Lucid in October 2020. Replication data from Zeitzoff (2023).\n\nExclusion criteria applied across all samples: respondents who did not complete the trait aggression battery; respondents who failed attention checks (US 2024: slider task requiring response between 70–80)."
+            },
+            "table_index": 10,
+            "para_indices": [
+              112,
+              113,
+              114,
+              115
+            ]
+          },
+          "sample_size": {
+            "slug": "sample_size",
+            "title": "Sample size*",
+            "required": true,
+            "section_slug": "sampling_plan",
+            "prompt_text": "Describe the sample size of your study. How many units will be analyzed in the study? This could be the number of people, birds, classrooms, plots, or countries included. If the units are not individuals, then describe the size requirements for each unit. If you are using a clustered or multilevel design, describe how many units are you collecting at each level of the analysis. This might be the number of samples or a range, minimum, or maximum.\nExample: Our target sample size is 280 participants. We will attempt to recruit up to 320, assuming that not all will complete the total task.\nMore information: For some studies, this will simply be the number of samples or the number of clusters. For others, this could be an expected range, minimum, or maximum number.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "Total combined N ≈ 4,337 across four samples:\n- Brazil 2023: N = 1,004\n- US 2024: N = 933\n- CCES 2017: N ≈ 1,000\n- Zeitzoff 2020: N ≈ 1,400\n\nEach sample is analyzed independently. No pooled analysis is planned."
+            },
+            "table_index": 11,
+            "para_indices": [
+              120,
+              121,
+              122,
+              123
+            ]
+          },
+          "sample_size_rationale": {
+            "slug": "sample_size_rationale",
+            "title": "Sample size rationale",
+            "required": false,
+            "section_slug": "sampling_plan",
+            "prompt_text": "This could include a power analysis or an arbitrary constraint such as time, money, or personnel.\nExample: We used the software program G*Power to conduct a power analysis. Our goal was to obtain .95 power to detect a medium effect size of .25 at the standard .05 alpha error probability.\nMore information: This gives you an opportunity to specifically state how the sample size will be determined. A wide range of possible answers is acceptable; remember that transparency is more important than principled justifications. If you state any reason for a sample size upfront, it is better than stating no reason and leaving the reader to “fill in the blanks.” Acceptable rationales include: a power analysis, an arbitrary number of subjects, or a number based on time or monetary constraints.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "Sample sizes were determined by the original data collection budgets and platform constraints, not by a priori power analysis for this specific project. However, post-hoc sensitivity analysis will be reported. With N ≈ 933 (smallest primary sample, US 2024) and a base rate of far-right vote choice of approximately 45%, logistic regression can detect odds ratios of 1.3 or larger for a standardized continuous predictor at α = .05, power = .80. The secondary datasets provide additional replication power."
+            },
+            "table_index": 12,
+            "para_indices": [
+              127,
+              128,
+              129,
+              130
+            ]
+          },
+          "stopping_rule": {
+            "slug": "stopping_rule",
+            "title": "Stopping rule",
+            "required": false,
+            "section_slug": "sampling_plan",
+            "prompt_text": "If your data collection procedures do not give you full control over your exact sample size, specify how you will decide when to terminate your data collection. If you are using sequential analysis, include your pre-specified thresholds.\nExample: We will post participant sign-up slots by week on the preceding Friday night, with 20 spots posted per week. We will post 20 new slots each week if, on that Friday night, we are below 320 participants.\nMore information: You may specify a stopping rule based on p-values only in the specific case of sequential analyses with pre-specified checkpoints, alphas levels, and stopping rules. Unacceptable rationales include stopping based on p-values if checkpoints and stopping rules are not specified. If you have control over your sample size, then including a stopping rule is not necessary, though it must be clear in this question or a previous question how an exact sample size is attained.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "Data collection is complete. No sequential testing or adaptive stopping was employed. All four datasets were collected in full before any analysis was planned for this project."
+            },
+            "table_index": 13,
+            "para_indices": [
+              134,
+              135,
+              136,
+              137
+            ]
+          }
+        }
+      },
+      "variables": {
+        "slug": "variables",
+        "title": "Variables",
+        "para_index": 139,
+        "fields": {
+          "manipulated_variables": {
+            "slug": "manipulated_variables",
+            "title": "Manipulated variables",
+            "required": false,
+            "section_slug": "variables",
+            "prompt_text": "Precisely define all variables you plan to manipulate and the levels or treatment arms of each variable. This is not applicable to any observational study.\nExample: We manipulated the percentage of sugar by mass added to brownies. The four levels of this categorical variable are: 15%, 20%, 25%, or 40% cane sugar by mass.\nMore information: For any experimental manipulation, you should give a precise definition of each manipulated variable. This must include a precise description of the levels at which each variable will be set, or a specific definition for each categorical treatment. For example, “loud or quiet,” should instead give either a precise decibel level or a means of recreating each level. 'Presence/absence' or 'positive/negative' is an acceptable description if the variable is precisely described.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "Experimental component (US 2024 only):\n\nTreatment condition (3 levels, between-subjects):\n1. FRAUD: Respondent's preferred candidate loses; losing candidate publicly contests results and alleges electoral fraud (ballot rejection, voter suppression in swing states).\n2. LOSS: Respondent's preferred candidate loses (no fraud allegation).\n3. CONTROL: Respondent thinks about the presidential election in general without specific scenario.\n\nThe observational component involves no experimental manipulation."
+            },
+            "table_index": 14,
+            "para_indices": [
+              142,
+              143,
+              144,
+              145
+            ]
+          },
+          "measured_variables": {
+            "slug": "measured_variables",
+            "title": "Measured variables *",
+            "required": true,
+            "section_slug": "variables",
+            "prompt_text": "Precisely define each variable that you will measure. This will include outcome measures, as well as any measured predictors or covariates.\nExample: The single outcome variable will be the perceived tastiness of the single brownie each participant will eat. We will measure this by asking participants ‘How much did you enjoy eating the brownie’ (on a scale of 1-7, 1 being ‘not at all’, 7 being ‘a great deal’) and ‘How good did the brownie taste’ (on a scale of 1-7, 1 being ‘very bad’, 7 being ‘very good’).\nMore information: Observational studies and meta-analyses will include only measured variables. As with the previous questions, the answers here must be precise. For example, 'intelligence,' 'accuracy,' 'aggression,' and 'color' are too vague. Acceptable alternatives could be 'IQ as measured by Wechsler Adult Intelligence Scale' 'percent correct,' 'number of threat displays,' and 'percent reflectance at 400 nm.'",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "PRIMARY OUTCOME VARIABLE:\nVote choice for far-right candidate (binary: 1 = Trump/Bolsonaro, 0 = other). Measured as retrospective vote (Brazil 2023, CCES 2017), prospective intention (US 2024), or hypothetical vote (Zeitzoff 2020).\n\nPRIMARY PREDICTOR:\nTrait aggression. Measured with the 12-item short form of the Buss-Perry Aggression Questionnaire (BAQ) in Brazil 2023 and US 2024 (6-point Likert, reverse-coded so higher = more aggressive). Measured with 2-item (CCES) or 3-item (Zeitzoff) abbreviated scales.\n\nSECONDARY OUTCOMES (US 2024 experiment only):\n- Support for political violence (3 items, 0–100 slider)\n- Undemocratic attitudes (7 items, 0–100 slider)\n- Political trust (4 items, 5-point scale)\n\nMEDIATOR:\n- Partisan identity/attachment: party identification (Republican/Democrat/Independent in US; petista/antipetista/nonpartisan in Brazil), strength of identification, party importance (0–100 slider, US 2024).\n\nCOMPETING/COMPLEMENTARY PREDICTORS:\n- Social Dominance Orientation (SDO7, 8 items, 7-point scale; US 2024)\n- Need for Chaos (7 items, 6-point scale; US 2024)\n\nCONTROL VARIABLES:\n- Age (continuous or categorical)\n- Gender (male/female/other)\n- Education (ordinal)\n- Race/ethnicity\n- Political ideology (7-point, liberal–conservative; US samples)\n- Political interest (4-point)"
+            },
+            "table_index": 15,
+            "para_indices": [
+              149,
+              150,
+              151,
+              152
+            ]
+          },
+          "indices": {
+            "slug": "indices",
+            "title": "Indices",
+            "required": false,
+            "section_slug": "variables",
+            "prompt_text": "If applicable, please define how measures will be combined into an index (or even a mean) and what measures will be used. Include either a formula or a precise description of the method. If you are using a more complicated statistical method to combine measures (e.g. a factor analysis), please note that here but describe the exact method in the analysis plan section.\nExample: We will take the mean of the two questions above to create a single measure of ‘brownie enjoyment.’\nMore information: If you are using multiple pieces of data to construct a single variable, how will this occur? Both the data that are included and the formula or weights for each measure must be specified. Standard summary statistics, such as “means” do not require a formula, though more complicated indices require either the exact formula or, if it is an established index in the field, the index must be unambiguously defined. For example, “biodiversity index” is too broad, whereas “Shannon’s biodiversity index” is appropriate.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "Trait aggression index: Mean of the 12 BAQ items (after reverse-coding) in Brazil 2023 and US 2024. For CCES, mean of 2 items; for Zeitzoff, mean of 3 items. Scale reliability (Cronbach's alpha) will be reported for each.\n\nSDO index: Mean of 8 SDO7 items (after reverse-coding items 3, 4, 7, 8). US 2024 only.\n\nNeed for Chaos index: Mean of 7 items (after reverse-coding). US 2024 only.\n\nPolitical violence support index: Mean of 3 items (0–100 sliders). US 2024 experiment only.\n\nUndemocratic attitudes index: Mean of 7 items (0–100 sliders). US 2024 experiment only.\n\nPolitical trust index: Mean of 4 items (5-point scales). US 2024 only.\n\nAll indices will be standardized (z-scored) before entry into regression models to facilitate comparison of effect sizes across samples and scales."
+            },
+            "table_index": 16,
+            "para_indices": [
+              157,
+              158,
+              159,
+              160
+            ]
+          }
+        }
+      },
+      "analysis_plan": {
+        "slug": "analysis_plan",
+        "title": "Analysis Plan",
+        "para_index": 165,
+        "fields": {
+          "statistical_models": {
+            "slug": "statistical_models",
+            "title": "Statistical models *",
+            "required": true,
+            "section_slug": "analysis_plan",
+            "prompt_text": "What statistical model will you use to test each hypothesis? Please include the type of model (e.g. ANOVA, RMANOVA, MANOVA, multiple regression, SEM, etc) and the specification of the model. This includes each variable that will be included, all interactions, subgroup analyses, pairwise or complex contrasts, and any follow-up tests from omnibus tests. If you plan on using any positive controls, negative controls, or manipulation checks you may mention that here. Provide enough detail so that another person could run the same analysis with the information provided. Remember that in your final article any test not included here must be noted as exploratory and that you must report the results of all tests.\nExample:  We will use a  2 X 3 repeated measures ANOVA (RMANOVA) with both factors within subjects to analyze our results.  This is perhaps the most important and most complicated question within the preregistration. Ask yourself: is enough detail provided to run the same analysis again with the information provided by the user? Be aware for instances where the statistical models appear specific, but actually leave openings for the precise test.\nMore information: This is perhaps the most important and most complicated question within the preregistration. As with all of the other questions, the key is to provide a specific recipe for analyzing the collected data. Ask yourself: is enough detail provided to run the same analysis again with the information provided by the user? Be aware for instances where the statistical models appear specific, but actually leave openings for the precise test. See the following examples:\nIf someone specifies a 2x3 ANOVA with both factors within subjects, there is still flexibility with the various types of ANOVAs that could be run. Either a repeated measures ANOVA (RMANOVA) or a multivariate ANOVA (MANOVA) could be used for that design, which are two different tests.\nIf you are going to perform a sequential analysis and check after 50, 100, and 150 samples, you must also specify the p-values you’ll test against at those three points.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "MODEL 1 — MAIN EFFECT (all four samples):\nLogistic regression: Vote_FarRight ~ Trait_Aggression + Controls\nControls: age, gender, education, race/ethnicity, political interest. Political ideology included in US samples only. Estimated separately for each sample. Odds ratios and 95% confidence intervals reported.\n\nMODEL 2 — COMPETING PREDICTORS (US 2024 only):\nLogistic regression: Vote_Trump ~ Trait_Aggression + SDO + Need_for_Chaos + Controls\nTests incremental validity of trait aggression over SDO and Need for Chaos.\n\nMODEL 3 — MODERATION BY PARTISAN IDENTITY (all four samples):\nLogistic regression: Vote_FarRight ~ Trait_Aggression * Partisan_Identity + Controls\nPartisan identity operationalized as strength of party ID (strong vs. weak/none). Interaction term tests H3.\n\nMODEL 4 — MEDIATION (US 2024 and Brazil 2023):\nCausal mediation analysis (Imai, Keele, & Tingley, 2010) with partisan identity as mediator:\n  Path a: Trait_Aggression → Partisan_Identity\n  Path b: Partisan_Identity → Vote_FarRight\n  Direct effect (c'): Trait_Aggression → Vote_FarRight\nBootstrap confidence intervals for indirect effect (1,000 draws).\n\nMODEL 5 — EXPERIMENTAL EFFECTS (US 2024 only):\nOLS regression: Violence_Support ~ Trait_Aggression * Treatment + Controls\nOLS regression: Undemocratic_Attitudes ~ Trait_Aggression * Treatment + Controls\nTreatment dummy-coded (fraud = 1, loss = 1, control = reference). Interaction terms test H5.\n\nAll models use robust (HC2) standard errors. Multiple comparisons across the five models within each sample are adjusted using Benjamini-Hochberg FDR correction at q = .05."
+            },
+            "table_index": 17,
+            "para_indices": [
+              168,
+              169,
+              170,
+              171,
+              172,
+              173
+            ]
+          },
+          "transformations": {
+            "slug": "transformations",
+            "title": "Transformations",
+            "required": false,
+            "section_slug": "analysis_plan",
+            "prompt_text": "If you plan on transforming, centering, recoding the data, or will require a coding scheme for categorical variables, please describe that process.\nExample: The “Effect of sugar on brownie tastiness” does not require any additional transformations. However, if it were using a regression analysis and each level of sweet had been categorically described (e.g. not sweet, somewhat sweet, sweet, and very sweet), ‘sweet’ could be dummy coded with ‘not sweet’ as the reference category.  If any categorical predictors are included in a regression, indicate how those variables will be coded (e.g. dummy coding, summation coding, etc.) and what the reference category will be.\nMore information: If any categorical predictors are included in a regression, indicate how those variables will be coded (e.g. dummy coding, summation coding, etc.) and what the reference category will be.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "1. Trait aggression items reverse-coded so higher values indicate greater aggression (items originally scaled Completely true = 1 to Completely false = 6 in US 2024; recoded to 1 = Completely false, 6 = Completely true).\n2. Need for Chaos items reverse-coded identically.\n3. SDO7 reverse-coded items (3, 4, 7, 8) recoded so higher = more dominance-oriented.\n4. All continuous predictors z-standardized (M = 0, SD = 1) within each sample before model estimation.\n5. Age recoded to continuous midpoints where collected as ranges (US 2024: 18–24 → 21, 25–34 → 29.5, etc.).\n6. Education coded as a continuous ordinal variable (1–6 in US, 1–7 in Brazil).\n7. Binary vote choice: 1 = far-right candidate, 0 = all other responses (including null/blank/other)."
+            },
+            "table_index": 18,
+            "para_indices": [
+              178,
+              179,
+              180,
+              181
+            ]
+          },
+          "inference_criteria": {
+            "slug": "inference_criteria",
+            "title": "Inference criteria",
+            "required": false,
+            "section_slug": "analysis_plan",
+            "prompt_text": "What criteria will you use to make inferences? Please describe the information you’ll use (e.g. specify the p-values, Bayes factors, specific model fit indices), as well as cut-off criterion, where appropriate. Will you be using one or two tailed tests for each of your analyses? If you are comparing multiple conditions or testing multiple hypotheses, will you account for this?\nExample: We will use the standard p<.05 criteria for determining if the ANOVA and the post hoc test suggest that the results are significantly different from those expected if the null hypothesis were correct. The post-hoc Tukey-Kramer test adjusts for multiple comparisons.\nMore information: P-values, confidence intervals, and effect sizes are standard means for making an inference, and any level is acceptable, though some criteria must be specified in this or previous fields. Bayesian analyses should specify a Bayes factor or a credible interval. If you are selecting models, then how will you determine the relative quality of each? In regards to multiple comparisons, this is a question with few “wrong” answers. In other words, transparency is more important than any specific method of controlling the false discovery rate or false error rate. One may state an intention to report all tests conducted or one may conduct a specific correction procedure; either strategy is acceptable.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "Primary inference: Two-tailed tests at α = .05 for all confirmatory hypotheses. Effect sizes reported as odds ratios (logistic regression) or standardized coefficients (OLS).\n\nCorrection for multiple comparisons: Benjamini-Hochberg FDR correction (q = .05) applied across the five model specifications within each sample. Cross-sample replication is treated as a robustness check, not requiring additional correction.\n\nMediation inference: Bootstrap 95% confidence intervals (1,000 resamples) for indirect effects. If the CI excludes zero, mediation is considered statistically supported.\n\nWe will report exact p-values, confidence intervals, and effect sizes for all focal parameters regardless of statistical significance."
+            },
+            "table_index": 19,
+            "para_indices": [
+              185,
+              186,
+              187,
+              188
+            ]
+          },
+          "data_exclusion": {
+            "slug": "data_exclusion",
+            "title": "Data exclusion",
+            "required": false,
+            "section_slug": "analysis_plan",
+            "prompt_text": "How will you determine what data or samples, if any, to exclude from your analyses? How will outliers be handled? Will you use any awareness check?\nExample: We will verify that each subject answered each of the three tastiness indices. Outliers will be included in the analysis.\nMore information: Any rule for excluding a particular set of data is acceptable. One may describe rules for excluding a participant or for identifying outlier data.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "1. Respondents who did not complete the full trait aggression battery are excluded from all analyses.\n2. US 2024: Respondents who failed the attention check (slider response outside the 70–80 range on the dining-out frequency question) are excluded.\n3. Brazil 2023: Respondents who answered 'Don't remember' to the vote question are excluded from vote-choice models (retained in descriptive analyses).\n4. No exclusion based on outlier values on continuous variables. Sensitivity analyses winsorizing at the 1st/99th percentiles will be reported.\n5. For CCES and Zeitzoff samples, we follow the original authors' exclusion criteria as documented in their replication materials."
+            },
+            "table_index": 20,
+            "para_indices": [
+              192,
+              193,
+              194,
+              195
+            ]
+          },
+          "missing_data": {
+            "slug": "missing_data",
+            "title": "Missing data",
+            "required": false,
+            "section_slug": "analysis_plan",
+            "prompt_text": "How will you deal with incomplete or missing data?\nExample: If a subject does not complete any of the three indices of tastiness, that subject will not be included in the analysis.\nMore information: Any relevant explanation is acceptable. As a final reminder, remember that the final analysis must follow the specified plan, and deviations must be either strongly justified or included as a separate, exploratory analysis.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "Item-level missingness on multi-item scales: If a respondent answered at least 75% of items in a scale (e.g., ≥ 9 of 12 aggression items), the index is computed as the mean of available items. Otherwise, the respondent is excluded from that analysis.\n\nModel-level missingness: Listwise deletion is used for regression models. As a sensitivity check, we will re-estimate Model 1 using multiple imputation (5 datasets, predictive mean matching) for any variable with > 5% missingness and report whether conclusions change."
+            },
+            "table_index": 21,
+            "para_indices": [
+              199,
+              200,
+              201,
+              202
+            ]
+          },
+          "exploratory_analysis": {
+            "slug": "exploratory_analysis",
+            "title": "Exploratory analysis",
+            "required": false,
+            "section_slug": "analysis_plan",
+            "prompt_text": "If you plan to explore your data to look for unspecified differences or relationships, you may include those plans here. If you list an exploratory test here, you are not obligated to report its results. But if you do report it you are obligated to describe it as an exploratory result.\nExample: We expect that certain demographic traits may be related to taste preferences. Therefore, we will look for relationships between demographic variables (age, gender, income, and marital status) and the primary outcome measures of taste preferences.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "1. Subscale analysis: Decompose the aggregate trait aggression index into its four Buss-Perry dimensions (physical aggression, verbal aggression, hostility, anger) and estimate separate models for each to identify which facet drives the overall effect.\n\n2. Heterogeneity by demographics: Estimate Model 1 separately by gender and by education terciles to examine whether the aggression–vote relationship varies across demographic subgroups.\n\n3. Nonlinear effects: Test whether the aggression–vote relationship is better captured by a quadratic term (Trait_Aggression²) or by treating aggression as categorical (terciles).\n\n4. Cross-national meta-analytic summary: Compute a fixed-effects meta-analytic estimate of the aggression coefficient across the four samples to provide a pooled effect size.\n\n5. Dose-response in the experiment: Examine whether aggression interacts with the number of fraud allegations mentioned (none, some, many) in the fraud treatment vignette.\n\nThese analyses are explicitly labeled as exploratory and will not be subject to multiple-comparison correction."
+            },
+            "table_index": 22,
+            "para_indices": [
+              206,
+              207,
+              208
+            ]
+          }
+        }
+      },
+      "other": {
+        "slug": "other",
+        "title": "Other",
+        "para_index": 211,
+        "fields": {
+          "other": {
+            "slug": "other",
+            "title": "Other",
+            "required": false,
+            "section_slug": "other",
+            "prompt_text": "If there is any additional information that you feel needs to be included in your preregistration, please enter it here. Literature cited, disclosures of any related work such as replications or work that uses the same data, or other context that will be helpful for future readers would be appropriate here.",
+            "response_type": "free_text",
+            "response": {
+              "type": "free_text",
+              "text": "Software: All analyses will be conducted in Python (statsmodels, scipy) and/or R (glm, mediation, sandwich packages). Replication code and data will be deposited on OSF upon publication.\n\nEthics: The Brazil 2023 survey was approved by [IRB name redacted]. The US 2024 survey was approved by [IRB name redacted]. Secondary datasets (CCES, Zeitzoff) are publicly available replication data.\n\nDeviations from this plan will be transparently reported in the final manuscript with justification."
+            },
+            "table_index": 23,
+            "para_indices": [
+              212,
+              213
+            ]
+          }
+        }
+      }
+    },
+    "source_path": "/home/ignacio/Dropbox/Workbench/research-anvil/01-Active/Trait-Aggression/design/prereg/OSF Preregistration.docx"
+  }
+}

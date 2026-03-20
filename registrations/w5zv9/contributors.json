@@ -1,0 +1,302 @@
+[
+  {
+    "id": "w5zv9-3vrtn",
+    "type": "contributors",
+    "attributes": {
+      "index": 0,
+      "bibliographic": true,
+      "permission": "admin",
+      "unregistered_contributor": null,
+      "is_curator": false
+    },
+    "relationships": {
+      "users": {
+        "links": {
+          "related": {
+            "href": "https://api.osf.io/v2/users/3vrtn/",
+            "meta": {}
+          }
+        },
+        "data": {
+          "id": "3vrtn",
+          "type": "users"
+        }
+      },
+      "node": {
+        "links": {
+          "related": {
+            "href": "https://api.osf.io/v2/nodes/w5zv9/",
+            "meta": {}
+          }
+        },
+        "data": {
+          "id": "w5zv9",
+          "type": "nodes"
+        }
+      }
+    },
+    "embeds": {
+      "users": {
+        "data": {
+          "id": "3vrtn",
+          "type": "users",
+          "attributes": {
+            "full_name": "Reuben Kline",
+            "given_name": "Reuben",
+            "middle_names": "",
+            "family_name": "Kline",
+            "suffix": "",
+            "date_registered": "2021-09-07T20:08:00.539563",
+            "active": true,
+            "timezone": "Etc/UTC",
+            "locale": "en_US",
+            "social": {
+              "orcid": "0000-0003-1874-4975"
+            },
+            "employment": [],
+            "education": [],
+            "external_identity": {
+              "ORCID": {
+                "id": "0000-0003-1874-4975",
+                "status": "VERIFIED"
+              }
+            }
+          },
+          "relationships": {
+            "nodes": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3vrtn/nodes/",
+                  "meta": {}
+                }
+              }
+            },
+            "registrations": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3vrtn/registrations/",
+                  "meta": {}
+                }
+              }
+            },
+            "institutions": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3vrtn/institutions/",
+                  "meta": {}
+                },
+                "self": {
+                  "href": "https://api.osf.io/v2/users/3vrtn/relationships/institutions/",
+                  "meta": {}
+                }
+              }
+            },
+            "preprints": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3vrtn/preprints/",
+                  "meta": {}
+                }
+              }
+            },
+            "draft_preprints": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3vrtn/draft_preprints/",
+                  "meta": {}
+                }
+              }
+            }
+          },
+          "links": {
+            "html": "https://osf.io/3vrtn/",
+            "profile_image": "https://secure.gravatar.com/avatar/7ea0db9451883ad4e1a95a723827cf19?d=identicon",
+            "self": "https://api.osf.io/v2/users/3vrtn/",
+            "iri": "https://osf.io/3vrtn"
+          }
+        }
+      }
+    },
+    "links": {
+      "self": "https://api.osf.io/v2/registrations/w5zv9/contributors/3vrtn/"
+    }
+  },
+  {
+    "id": "w5zv9-3v6gx",
+    "type": "contributors",
+    "attributes": {
+      "index": 1,
+      "bibliographic": true,
+      "permission": "write",
+      "unregistered_contributor": null,
+      "is_curator": false
+    },
+    "relationships": {
+      "users": {
+        "links": {
+          "related": {
+            "href": "https://api.osf.io/v2/users/3v6gx/",
+            "meta": {}
+          }
+        },
+        "data": {
+          "id": "3v6gx",
+          "type": "users"
+        }
+      },
+      "node": {
+        "links": {
+          "related": {
+            "href": "https://api.osf.io/v2/nodes/w5zv9/",
+            "meta": {}
+          }
+        },
+        "data": {
+          "id": "w5zv9",
+          "type": "nodes"
+        }
+      }
+    },
+    "embeds": {
+      "users": {
+        "data": {
+          "id": "3v6gx",
+          "type": "users",
+          "attributes": {
+            "full_name": "Ignacio Urbina",
+            "given_name": "Ignacio",
+            "middle_names": "",
+            "family_name": "Urbina",
+            "suffix": "",
+            "date_registered": "2023-01-25T17:06:17.505464",
+            "active": true,
+            "timezone": "Etc/UTC",
+            "locale": "en_US",
+            "social": {
+              "ssrn": "",
+              "orcid": "",
+              "github": "",
+              "scholar": "",
+              "twitter": "",
+              "linkedIn": "in/ignaciourbinah/?locale=en_US",
+              "impactStory": "",
+              "baiduScholar": "",
+              "researchGate": "",
+              "researcherId": "",
+              "profileWebsites": [
+                "https://www.ignacio-urbina.com/"
+              ],
+              "academiaProfileID": "",
+              "academiaInstitution": ""
+            },
+            "employment": [
+              {
+                "title": "Ph.D. Candidate",
+                "endYear": null,
+                "ongoing": false,
+                "endMonth": null,
+                "startYear": null,
+                "department": "Political Science",
+                "startMonth": null,
+                "institution": "Stony Brook University"
+              }
+            ],
+            "education": [],
+            "allow_indexing": null,
+            "can_view_reviews": [],
+            "accepted_terms_of_service": true,
+            "external_identity": {},
+            "email": "ignacio.urbina@stonybrook.edu"
+          },
+          "relationships": {
+            "nodes": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3v6gx/nodes/",
+                  "meta": {}
+                }
+              }
+            },
+            "registrations": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3v6gx/registrations/",
+                  "meta": {}
+                }
+              }
+            },
+            "institutions": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3v6gx/institutions/",
+                  "meta": {}
+                },
+                "self": {
+                  "href": "https://api.osf.io/v2/users/3v6gx/relationships/institutions/",
+                  "meta": {}
+                }
+              }
+            },
+            "preprints": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3v6gx/preprints/",
+                  "meta": {}
+                }
+              }
+            },
+            "draft_preprints": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3v6gx/draft_preprints/",
+                  "meta": {}
+                }
+              }
+            },
+            "emails": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3v6gx/settings/emails/",
+                  "meta": {}
+                }
+              }
+            },
+            "default_region": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/regions/us/",
+                  "meta": {}
+                }
+              },
+              "data": {
+                "id": "us",
+                "type": "regions"
+              }
+            },
+            "settings": {
+              "links": {
+                "related": {
+                  "href": "https://api.osf.io/v2/users/3v6gx/settings/",
+                  "meta": {}
+                }
+              },
+              "data": {
+                "id": "3v6gx",
+                "type": "user-settings"
+              }
+            }
+          },
+          "links": {
+            "html": "https://osf.io/3v6gx/",
+            "profile_image": "https://secure.gravatar.com/avatar/86e2f774c1305cc589afa46680795c6f?d=identicon",
+            "self": "https://api.osf.io/v2/users/3v6gx/",
+            "iri": "https://osf.io/3v6gx"
+          }
+        }
+      }
+    },
+    "links": {
+      "self": "https://api.osf.io/v2/registrations/w5zv9/contributors/3v6gx/"
+    }
+  }
+]

@@ -1,0 +1,171 @@
+{
+  "registration_id": "w5zv9",
+  "title": "Communication and Cooperation with Human and Artificial Agents",
+  "date_registered": "2023-08-21T16:49:05.823223",
+  "schema": "OSF Preregistration",
+  "schema_version": 3,
+  "fields": {
+    "q2": {
+      "section": "Study Information",
+      "title": "Hypotheses",
+      "responses": {
+        "value": "Cooperation rates will be lower in the hybrid human-AI conditions with artificial agents compared to the human-human conditions\n\nCooperation rates will be higher in human-human condition with communication than the human-human without communication.\n\nCooperation rates will be lower in the human-ai condition with communication than the human-ai condition without communication. \n\nSupport for AI regulation will be higher in human-ai conditions than human-human conditions.\n\n\n\n"
+      }
+    },
+    "q3": {
+      "section": "Design Plan",
+      "title": "Study type",
+      "responses": {
+        "value": "Experiment - A researcher randomly assigns treatments to study subjects, this includes field or lab experiments. This is also known as an intervention experiment and includes randomized controlled trials."
+      }
+    },
+    "q4": {
+      "section": "Design Plan",
+      "title": "Blinding",
+      "responses": {
+        "value": [
+          "For studies that involve human subjects, they will not know the treatment group to which they have been assigned."
+        ]
+      }
+    },
+    "q5": {
+      "section": "Design Plan",
+      "title": "Is there any additional blinding in this study?",
+      "responses": {
+        "value": ""
+      }
+    },
+    "q6": {
+      "section": "Design Plan",
+      "title": "Study design",
+      "responses": {
+        "question": "There are four between subjects conditions with humans making choices in the prisoner's dilemma. Two in which a human participant is matched with another human as the other player, and two in which a human is matched with an algorithmic player playing on behalf of another human. In both types of interactions, there is one condition with only the one-shot prisoner's dilemma and one condition that incorporates communication by allowing the players to choose from among a set of seven messages. To ensure that we avoided deception, there are two additional sets of participants who are those for whom the algorithm played on their behalf. They do not make binding choices in the game, but they are asked to guess what they think the players, both algorithmic and human, will choose. ",
+        "uploader": []
+      }
+    },
+    "q7": {
+      "section": "Design Plan",
+      "title": "Randomization",
+      "responses": {
+        "value": "We will use simple randomization through the Qualtrics functionality. This will assign participants equally to each of the six conditions."
+      }
+    },
+    "q8": {
+      "section": "Sampling Plan",
+      "title": "Existing Data",
+      "responses": {
+        "value": "Registration prior to creation of data"
+      }
+    },
+    "q9": {
+      "section": "Sampling Plan",
+      "title": "Explanation of existing data",
+      "responses": {
+        "value": ""
+      }
+    },
+    "q10": {
+      "section": "Sampling Plan",
+      "title": "Data collection procedures",
+      "responses": {
+        "question": "We will recruit from Amazon Mechanical Turk. We will include only participants that reside in the United States, speak English, and are over 18 years of age. Participants will be paid $1 for their participation, and can earn an additional $0.25 to $1 depending on what choices are made during the game. ",
+        "uploader": []
+      }
+    },
+    "q11": {
+      "section": "Sampling Plan",
+      "title": "Sample size",
+      "responses": {
+        "value": "The target sample size is 100 per condition, or 600 total participants."
+      }
+    },
+    "q12": {
+      "section": "Sampling Plan",
+      "title": "Sample size rationale",
+      "responses": {
+        "value": "This is a pilot study and the sample size was chosen to be a standard, round number."
+      }
+    },
+    "q13": {
+      "section": "Sampling Plan",
+      "title": "Stopping rule",
+      "responses": {
+        "value": "We will stop data collection when we have reached 600 total participants, even if some of the individual conditions have not yet reached the target of 100.\n"
+      }
+    },
+    "q14": {
+      "section": "Variables",
+      "title": "Manipulated variables",
+      "responses": {
+        "question": "We manipulated two things in a 2x2 factorial between-subjects design: First, whether the participant played the game with another human or a GPT-based algorithm playing on behalf of another human. Second, whether pre-play, cheap-talk communication was allowed. In the communication conditions there were seven possible pre-defined messages that the players could choose from. ",
+        "uploader": []
+      }
+    },
+    "q15": {
+      "section": "Variables",
+      "title": "Measured variables",
+      "responses": {
+        "question": "The outcome measures are the choice in the game (\"A\" -- defect-- or \"B\" -- cooperate). In the conditions in which the human player had no choice to make, their were asked to guess what the human and algorithm players would choose. Other outcomes are measured by survey items. See the attached documents.",
+        "uploader": []
+      }
+    },
+    "q16": {
+      "section": "Variables",
+      "title": "Indices",
+      "responses": {
+        "question": "",
+        "uploader": []
+      }
+    },
+    "q17": {
+      "section": "Analysis Plan",
+      "title": "Statistical models",
+      "responses": {
+        "question": "We will use simple t-tests and non-parametric Mann-Whitney tests to analyze differences in group means. When including additional demographic covariates, we will use logistic regression analysis. ",
+        "uploader": []
+      }
+    },
+    "q18": {
+      "section": "Analysis Plan",
+      "title": "Transformations",
+      "responses": {
+        "value": "N/A"
+      }
+    },
+    "q19": {
+      "section": "Analysis Plan",
+      "title": "Inference criteria",
+      "responses": {
+        "value": "We will be using two-tailed tests for our analysis, with significance levels of both 0.05 and 0.1."
+      }
+    },
+    "q20": {
+      "section": "Analysis Plan",
+      "title": "Data exclusion",
+      "responses": {
+        "value": "We included one comprehension question, but this will be used as a covariate, not as an exclusion criteria. "
+      }
+    },
+    "q21": {
+      "section": "Analysis Plan",
+      "title": "Missing data",
+      "responses": {
+        "value": "We have forced response enabled, so missing outcome measures are unlikely. However, if we do have any observations for which any outcome measure is messing, they will be list-wise deleted."
+      }
+    },
+    "q22": {
+      "section": "Analysis Plan",
+      "title": "Exploratory analysis",
+      "responses": {
+        "value": ""
+      }
+    },
+    "q23": {
+      "section": "Other",
+      "title": "Other",
+      "responses": {
+        "value": "We prompted the Chat-GPT algorithm to play a prisoner's dilemma. The prompt text and other information about the use of the artificial intelligence in our project are included in additional documentation."
+      }
+    }
+  }
+}

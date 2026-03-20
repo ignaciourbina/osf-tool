@@ -1,0 +1,93 @@
+[
+  {
+    "id": "64e3958662e5ee19bf3ab865",
+    "type": "files",
+    "attributes": {
+      "guid": null,
+      "checkout": null,
+      "name": "Archive of OSF Storage",
+      "kind": "folder",
+      "path": "/64e3958662e5ee19bf3ab865/",
+      "size": null,
+      "provider": "osfstorage",
+      "materialized_path": "/Archive of OSF Storage/",
+      "last_touched": null,
+      "date_modified": null,
+      "date_created": null,
+      "extra": {
+        "hashes": {
+          "md5": null,
+          "sha256": null
+        }
+      },
+      "tags": [],
+      "current_user_can_comment": true,
+      "current_version": 1,
+      "show_as_unviewed": false
+    },
+    "relationships": {
+      "parent_folder": {
+        "links": {
+          "related": {
+            "href": "https://api.osf.io/v2/files/64e39582ffc6bf015fbac085/",
+            "meta": {}
+          }
+        },
+        "data": {
+          "id": "64e39582ffc6bf015fbac085",
+          "type": "files"
+        }
+      },
+      "files": {
+        "links": {
+          "related": {
+            "href": "https://api.osf.io/v2/registrations/w5zv9/files/osfstorage/64e3958662e5ee19bf3ab865/",
+            "meta": {}
+          }
+        }
+      },
+      "node": {
+        "links": {
+          "related": {
+            "href": "https://api.osf.io/v2/registrations/w5zv9/",
+            "meta": {}
+          }
+        },
+        "data": {
+          "id": "w5zv9",
+          "type": "registrations"
+        }
+      },
+      "target": {
+        "links": {
+          "related": {
+            "href": "https://api.osf.io/v2/registrations/w5zv9/",
+            "meta": {
+              "type": "registrations"
+            }
+          }
+        },
+        "data": {
+          "type": "registrations",
+          "id": "w5zv9"
+        }
+      },
+      "cedar_metadata_records": {
+        "links": {
+          "related": {
+            "href": "https://api.osf.io/v2/files/64e3958662e5ee19bf3ab865/cedar_metadata_records/",
+            "meta": {}
+          }
+        }
+      }
+    },
+    "links": {
+      "info": "https://api.osf.io/v2/files/64e3958662e5ee19bf3ab865/",
+      "move": "https://files.osf.io/v1/resources/w5zv9/providers/osfstorage/64e3958662e5ee19bf3ab865/",
+      "upload": "https://files.osf.io/v1/resources/w5zv9/providers/osfstorage/64e3958662e5ee19bf3ab865/",
+      "delete": "https://files.osf.io/v1/resources/w5zv9/providers/osfstorage/64e3958662e5ee19bf3ab865/",
+      "new_folder": "https://files.osf.io/v1/resources/w5zv9/providers/osfstorage/64e3958662e5ee19bf3ab865/?kind=folder",
+      "self": "https://api.osf.io/v2/files/64e3958662e5ee19bf3ab865/"
+    }
+  }
+]

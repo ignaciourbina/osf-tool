@@ -1,0 +1,14 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+registration-packets/*/venv/
+registration-packets/*/__pycache__/
+registration-packets/ai-communication-and-cooperation-extension/aicoop-analysis/

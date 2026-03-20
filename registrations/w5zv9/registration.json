@@ -1,0 +1,569 @@
+{
+  "id": "w5zv9",
+  "type": "registrations",
+  "attributes": {
+    "title": "Communication and Cooperation with Human and Artificial Agents",
+    "description": "Artificial Intelligence and Large Language Models in particular, have recently advanced at a dizzying pace. These models have are quickly reaching human-level competence in generating language. So much so that it seems inevitable that LLMs will continue to play a larger role in our lives, including generating language to mediate interaction with other humans engaged in social, economic, and cultural exchange. Social dilemmas are defined by a tension between what is in the long-term interest of the group, and what is in the short-term interest of the individual. Studies have consistently found that communication among participants in social dilemmas increases the number of people working for the mutual benefit of the group. In this project, we explore how the presence of communication mediated by Large Language Models affects cooperation in a standard prisoner\u2019s dilemma game. We compare this condition with control conditions with human-human communication and interaction. Our findings will shed light on a fundamental implication of the social impact of the increasing prevalence of artificial intelligence in our daily lives.",
+    "category": "",
+    "custom_citation": "",
+    "date_created": "2023-08-21T16:49:05.858096",
+    "date_modified": "2023-08-21T16:49:05.620580",
+    "registration": true,
+    "preprint": false,
+    "fork": false,
+    "collection": false,
+    "tags": [],
+    "access_requests_enabled": false,
+    "node_license": {
+      "copyright_holders": [],
+      "year": null
+    },
+    "current_user_can_comment": true,
+    "current_user_permissions": [
+      "write",
+      "read"
+    ],
+    "current_user_is_contributor": true,
+    "current_user_is_contributor_or_group_member": true,
+    "wiki_enabled": true,
+    "public": true,
+    "ia_url": "https://archive.org/details/osf-registrations-w5zv9-v1",
+    "reviews_state": "accepted",
+    "article_doi": null,
+    "pending_embargo_approval": false,
+    "pending_embargo_termination_approval": false,
+    "embargoed": false,
+    "pending_registration_approval": false,
+    "archiving": false,
+    "pending_withdrawal": false,
+    "withdrawn": false,
+    "has_project": true,
+    "date_registered": "2023-08-21T16:49:05.823223",
+    "date_withdrawn": null,
+    "embargo_end_date": null,
+    "withdrawal_justification": null,
+    "revision_state": "approved",
+    "has_data": false,
+    "has_analytic_code": false,
+    "has_materials": false,
+    "has_papers": false,
+    "has_supplements": false,
+    "registration_supplement": "OSF Preregistration",
+    "registered_meta": {
+      "q2": {
+        "extra": [],
+        "value": "Cooperation rates will be lower in the hybrid human-AI conditions with artificial agents compared to the human-human conditions\n\nCooperation rates will be higher in human-human condition with communication than the human-human without communication.\n\nCooperation rates will be lower in the human-ai condition with communication than the human-ai condition without communication. \n\nSupport for AI regulation will be higher in human-ai conditions than human-human conditions.\n\n\n\n"
+      },
+      "q3": {
+        "extra": [],
+        "value": "Experiment - A researcher randomly assigns treatments to study subjects, this includes field or lab experiments. This is also known as an intervention experiment and includes randomized controlled trials."
+      },
+      "q4": {
+        "extra": [],
+        "value": [
+          "For studies that involve human subjects, they will not know the treatment group to which they have been assigned."
+        ]
+      },
+      "q5": {
+        "extra": [],
+        "value": ""
+      },
+      "q6": {
+        "value": {
+          "question": {
+            "extra": [],
+            "value": "There are four between subjects conditions with humans making choices in the prisoner's dilemma. Two in which a human participant is matched with another human as the other player, and two in which a human is matched with an algorithmic player playing on behalf of another human. In both types of interactions, there is one condition with only the one-shot prisoner's dilemma and one condition that incorporates communication by allowing the players to choose from among a set of seven messages. To ensure that we avoided deception, there are two additional sets of participants who are those for whom the algorithm played on their behalf. They do not make binding choices in the game, but they are asked to guess what they think the players, both algorithmic and human, will choose. "
+          },
+          "uploader": {
+            "extra": [],
+            "value": ""
+          }
+        }
+      },
+      "q7": {
+        "extra": [],
+        "value": "We will use simple randomization through the Qualtrics functionality. This will assign participants equally to each of the six conditions."
+      },
+      "q8": {
+        "extra": [],
+        "value": "Registration prior to creation of data"
+      },
+      "q9": {
+        "extra": [],
+        "value": ""
+      },
+      "q10": {
+        "value": {
+          "question": {
+            "extra": [],
+            "value": "We will recruit from Amazon Mechanical Turk. We will include only participants that reside in the United States, speak English, and are over 18 years of age. Participants will be paid $1 for their participation, and can earn an additional $0.25 to $1 depending on what choices are made during the game. "
+          },
+          "uploader": {
+            "extra": [],
+            "value": ""
+          }
+        }
+      },
+      "q11": {
+        "extra": [],
+        "value": "The target sample size is 100 per condition, or 600 total participants."
+      },
+      "q12": {
+        "extra": [],
+        "value": "This is a pilot study and the sample size was chosen to be a standard, round number."
+      },
+      "q13": {
+        "extra": [],
+        "value": "We will stop data collection when we have reached 600 total participants, even if some of the individual conditions have not yet reached the target of 100.\n"
+      },
+      "q14": {
+        "value": {
+          "question": {
+            "extra": [],
+            "value": "We manipulated two things in a 2x2 factorial between-subjects design: First, whether the participant played the game with another human or a GPT-based algorithm playing on behalf of another human. Second, whether pre-play, cheap-talk communication was allowed. In the communication conditions there were seven possible pre-defined messages that the players could choose from. "
+          },
+          "uploader": {
+            "extra": [],
+            "value": ""
+          }
+        }
+      },
+      "q15": {
+        "value": {
+          "question": {
+            "extra": [],
+            "value": "The outcome measures are the choice in the game (\"A\" -- defect-- or \"B\" -- cooperate). In the conditions in which the human player had no choice to make, their were asked to guess what the human and algorithm players would choose. Other outcomes are measured by survey items. See the attached documents."
+          },
+          "uploader": {
+            "extra": [],
+            "value": ""
+          }
+        }
+      },
+      "q16": {
+        "value": {
+          "question": {
+            "extra": [],
+            "value": ""
+          },
+          "uploader": {
+            "extra": [],
+            "value": ""
+          }
+        }
+      },
+      "q17": {
+        "value": {
+          "question": {
+            "extra": [],
+            "value": "We will use simple t-tests and non-parametric Mann-Whitney tests to analyze differences in group means. When including additional demographic covariates, we will use logistic regression analysis. "
+          },
+          "uploader": {
+            "extra": [],
+            "value": ""
+          }
+        }
+      },
+      "q18": {
+        "extra": [],
+        "value": "N/A"
+      },
+      "q19": {
+        "extra": [],
+        "value": "We will be using two-tailed tests for our analysis, with significance levels of both 0.05 and 0.1."
+      },
+      "q20": {
+        "extra": [],
+        "value": "We included one comprehension question, but this will be used as a covariate, not as an exclusion criteria. "
+      },
+      "q21": {
+        "extra": [],
+        "value": "We have forced response enabled, so missing outcome measures are unlikely. However, if we do have any observations for which any outcome measure is messing, they will be list-wise deleted."
+      },
+      "q22": {
+        "extra": [],
+        "value": ""
+      },
+      "q23": {
+        "extra": [],
+        "value": "We prompted the Chat-GPT algorithm to play a prisoner's dilemma. The prompt text and other information about the use of the artificial intelligence in our project are included in additional documentation."
+      }
+    },
+    "registration_responses": {
+      "q2": "Cooperation rates will be lower in the hybrid human-AI conditions with artificial agents compared to the human-human conditions\n\nCooperation rates will be higher in human-human condition with communication than the human-human without communication.\n\nCooperation rates will be lower in the human-ai condition with communication than the human-ai condition without communication. \n\nSupport for AI regulation will be higher in human-ai conditions than human-human conditions.\n\n\n\n",
+      "q3": "Experiment - A researcher randomly assigns treatments to study subjects, this includes field or lab experiments. This is also known as an intervention experiment and includes randomized controlled trials.",
+      "q4": [
+        "For studies that involve human subjects, they will not know the treatment group to which they have been assigned."
+      ],
+      "q5": "",
+      "q6.question": "There are four between subjects conditions with humans making choices in the prisoner's dilemma. Two in which a human participant is matched with another human as the other player, and two in which a human is matched with an algorithmic player playing on behalf of another human. In both types of interactions, there is one condition with only the one-shot prisoner's dilemma and one condition that incorporates communication by allowing the players to choose from among a set of seven messages. To ensure that we avoided deception, there are two additional sets of participants who are those for whom the algorithm played on their behalf. They do not make binding choices in the game, but they are asked to guess what they think the players, both algorithmic and human, will choose. ",
+      "q6.uploader": [],
+      "q7": "We will use simple randomization through the Qualtrics functionality. This will assign participants equally to each of the six conditions.",
+      "q8": "Registration prior to creation of data",
+      "q9": "",
+      "q10.question": "We will recruit from Amazon Mechanical Turk. We will include only participants that reside in the United States, speak English, and are over 18 years of age. Participants will be paid $1 for their participation, and can earn an additional $0.25 to $1 depending on what choices are made during the game. ",
+      "q10.uploader": [],
+      "q11": "The target sample size is 100 per condition, or 600 total participants.",
+      "q12": "This is a pilot study and the sample size was chosen to be a standard, round number.",
+      "q13": "We will stop data collection when we have reached 600 total participants, even if some of the individual conditions have not yet reached the target of 100.\n",
+      "q14.question": "We manipulated two things in a 2x2 factorial between-subjects design: First, whether the participant played the game with another human or a GPT-based algorithm playing on behalf of another human. Second, whether pre-play, cheap-talk communication was allowed. In the communication conditions there were seven possible pre-defined messages that the players could choose from. ",
+      "q14.uploader": [],
+      "q15.question": "The outcome measures are the choice in the game (\"A\" -- defect-- or \"B\" -- cooperate). In the conditions in which the human player had no choice to make, their were asked to guess what the human and algorithm players would choose. Other outcomes are measured by survey items. See the attached documents.",
+      "q15.uploader": [],
+      "q16.question": "",
+      "q16.uploader": [],
+      "q17.question": "We will use simple t-tests and non-parametric Mann-Whitney tests to analyze differences in group means. When including additional demographic covariates, we will use logistic regression analysis. ",
+      "q17.uploader": [],
+      "q18": "N/A",
+      "q19": "We will be using two-tailed tests for our analysis, with significance levels of both 0.05 and 0.1.",
+      "q20": "We included one comprehension question, but this will be used as a covariate, not as an exclusion criteria. ",
+      "q21": "We have forced response enabled, so missing outcome measures are unlikely. However, if we do have any observations for which any outcome measure is messing, they will be list-wise deleted.",
+      "q22": "",
+      "q23": "We prompted the Chat-GPT algorithm to play a prisoner's dilemma. The prompt text and other information about the use of the artificial intelligence in our project are included in additional documentation."
+    },
+    "provider_specific_metadata": [],
+    "subjects": [
+      [
+        {
+          "id": "584240da54be81056cecac48",
+          "text": "Social and Behavioral Sciences"
+        }
+      ]
+    ]
+  },
+  "relationships": {
+    "license": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/licenses/563c1cf88c5e4a3877f9e970/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "563c1cf88c5e4a3877f9e970",
+        "type": "licenses"
+      }
+    },
+    "children": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/children/",
+          "meta": {}
+        }
+      }
+    },
+    "collected_in": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/nodes/w5zv9/collections/",
+          "meta": {}
+        }
+      }
+    },
+    "comments": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/comments/?filter%5Btarget%5D=w5zv9",
+          "meta": {}
+        }
+      }
+    },
+    "contributors": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/contributors/",
+          "meta": {}
+        }
+      }
+    },
+    "bibliographic_contributors": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/bibliographic_contributors/",
+          "meta": {}
+        }
+      }
+    },
+    "implicit_contributors": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/implicit_contributors/",
+          "meta": {}
+        }
+      }
+    },
+    "files": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/files/",
+          "meta": {}
+        }
+      }
+    },
+    "wikis": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/wikis/",
+          "meta": {}
+        }
+      }
+    },
+    "forks": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/forks/",
+          "meta": {}
+        }
+      }
+    },
+    "node_links": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/node_links/",
+          "meta": {}
+        }
+      }
+    },
+    "linked_by_nodes": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/linked_by_nodes/",
+          "meta": {}
+        }
+      }
+    },
+    "linked_by_registrations": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/linked_by_registrations/",
+          "meta": {}
+        }
+      }
+    },
+    "identifiers": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/identifiers/",
+          "meta": {}
+        }
+      }
+    },
+    "affiliated_institutions": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/institutions/",
+          "meta": {}
+        },
+        "self": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/relationships/institutions/",
+          "meta": {}
+        }
+      }
+    },
+    "region": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/regions/us/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "us",
+        "type": "regions"
+      }
+    },
+    "root": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "w5zv9",
+        "type": "registrations"
+      }
+    },
+    "logs": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/logs/",
+          "meta": {}
+        }
+      }
+    },
+    "linked_nodes": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/linked_nodes/",
+          "meta": {}
+        },
+        "self": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/relationships/linked_nodes/",
+          "meta": {}
+        }
+      }
+    },
+    "linked_registrations": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/linked_registrations/",
+          "meta": {}
+        },
+        "self": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/relationships/linked_registrations/",
+          "meta": {}
+        }
+      }
+    },
+    "view_only_links": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/view_only_links/",
+          "meta": {}
+        }
+      }
+    },
+    "citation": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/citation/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "w5zv9",
+        "type": "citation"
+      }
+    },
+    "storage": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/nodes/w5zv9/storage/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "w5zv9",
+        "type": "node-storage"
+      }
+    },
+    "cedar_metadata_records": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/cedar_metadata_records/",
+          "meta": {}
+        }
+      }
+    },
+    "registered_by": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/users/3vrtn/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "3vrtn",
+        "type": "users"
+      }
+    },
+    "registered_from": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/nodes/xr5jg/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "xr5jg",
+        "type": "nodes"
+      }
+    },
+    "registration_schema": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/schemas/registrations/5e795fc0d2833800195735d0/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "5e795fc0d2833800195735d0",
+        "type": "registration-schemas"
+      }
+    },
+    "provider": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/providers/registrations/osf/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "osf",
+        "type": "registration-providers"
+      }
+    },
+    "review_actions": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/actions/",
+          "meta": {}
+        }
+      }
+    },
+    "requests": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/requests/",
+          "meta": {}
+        }
+      }
+    },
+    "schema_responses": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/schema_responses/",
+          "meta": {}
+        }
+      }
+    },
+    "original_response": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/schema_responses/64e39582ffc6bf015fbac087/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "64e39582ffc6bf015fbac087",
+        "type": "schema_responses"
+      }
+    },
+    "latest_response": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/schema_responses/64e39582ffc6bf015fbac087/",
+          "meta": {}
+        }
+      },
+      "data": {
+        "id": "64e39582ffc6bf015fbac087",
+        "type": "schema_responses"
+      }
+    },
+    "resources": {
+      "links": {
+        "related": {
+          "href": "https://api.osf.io/v2/registrations/w5zv9/resources/",
+          "meta": {}
+        }
+      }
+    }
+  },
+  "links": {
+    "html": "https://osf.io/w5zv9/",
+    "self": "https://api.osf.io/v2/registrations/w5zv9/",
+    "iri": "https://osf.io/w5zv9"
+  }
+}
