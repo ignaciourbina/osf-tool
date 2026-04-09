@@ -1,42 +1,99 @@
 # osf-tool
 
-Python toolkit for parsing, editing, versioning, and regenerating OSF Pre-registration forms stored as `.docx` files.
+Standalone Python toolkit for two adjacent OSF workflows:
 
-## What it does
+- `osf_workflow/`: parse, edit, version, and regenerate OSF preregistration `.docx` files.
+- `osf_api_cli/`: research-grade OSF API client and CLI for projects, files, draft registrations, and registrations.
 
-- Parses OSF pre-registration `.docx` files into structured data (questions, response types, current answers).
-- Edits responses programmatically with type-safe write-back that preserves the original document formatting.
-- Versions completed forms with digest-based snapshots for audit trails.
-- Supports three response types: free text, radio (single select), and multi-select checkboxes.
+## Components
 
-## Structure
+### `osf_workflow`
 
+The document workflow preserves the existing OSF preregistration form structure while letting you:
+
+- parse a `.docx` preregistration into structured fields
+- edit responses programmatically with type checks
+- write an updated `.docx`
+- snapshot versions and diff field-level changes
+
+### `osf_api_cli`
+
+The API layer provides:
+
+- authenticated OSF API access with normalized errors
+- typed resource models for users, projects, files, drafts, registrations, contributors, and schemas
+- nested CLI commands for discovery and export
+- draft inspection by draft ID
+- project inspection/export across contributors, files, drafts, and registrations
+- draft field updates via JSON payloads
+
+## Installation
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
 ```
-osf_workflow/
-  parser.py       # Reads .docx, extracts questions and responses
-  writer.py       # Surgical write-back into .docx (preservation-first)
-  schema.py       # ResponseType enum, field inventory, type contracts
-  versioning.py   # Digest-based versioning (cloned from irb-tool pattern)
+
+Optional editable install:
+
+```bash
+.venv/bin/pip install -e .
 ```
 
-## Usage
+## Authentication
+
+The CLI resolves credentials in this order:
+
+1. `--token`
+2. `OSF_TOKEN`
+3. profile token in `~/.config/osf-tool/config.toml`
+4. legacy `osf-credentials.txt`
+
+Example config:
+
+```toml
+default_profile = "default"
+
+[profiles.default]
+token = "your-osf-token"
+timeout = 30
+```
+
+## CLI Usage
+
+```bash
+python -m osf_api_cli auth check
+python -m osf_api_cli project list
+python -m osf_api_cli project inspect vseu4 --json
+python -m osf_api_cli draft inspect 69d02feb810dc0832d7a8507 --dest draft.json --json
+python -m osf_api_cli draft update-metadata 69d02feb810dc0832d7a8507 fields.json --json
+```
+
+If installed via `pip -e .`, the console scripts are:
+
+```bash
+osf auth check
+osf-api auth check
+```
+
+## Document Workflow Usage
 
 ```python
-from osf_workflow.parser import parse_preregistration
-from osf_workflow.writer import update_response
+from osf_workflow import parse_osf_form, write_osf_form_to_docx
 
-questions = parse_preregistration("my_prereg.docx")
-update_response("my_prereg.docx", field_id="study_design", value="Between-subjects experiment")
+form = parse_osf_form("OSF Preregistration.docx")
+form.edit_field("hypotheses", "Trait aggression predicts far-right vote choice.")
+write_osf_form_to_docx(form, "updated_preregistration.docx")
 ```
 
-The toolkit maps all 28 fields of the OSF Preregistration template to their response types and section locations.
+## Repo Layout
 
-## Used in
-
-- Pre-analysis plan for "Trait Aggression and Voting for the Far-Right" (Sgorlon and Urbina)
-- Registration packet for "Communication and Cooperation with Human and Artificial Agents" (Urbina, Kline, and Ponda)
-
-## Requirements
-
-- Python 3.11+
-- python-docx
+```text
+osf_api_cli/
+osf_workflow/
+scripts/
+tests/
+versions/
+TECH_SPEC.md
+requirements.txt
+```

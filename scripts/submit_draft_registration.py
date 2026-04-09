@@ -256,7 +256,7 @@ def submit(draft: dict) -> None:
         title=title,
         description=description,
     )
-    draft_id = draft_data["id"]
+    draft_id = draft_data.id
     print(f"  Created draft: {draft_id}")
 
     print("Step 2: Updating registration responses...")

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "osf-tool"
+version = "0.2.0"
+description = "OSF preregistration docx workflow tools plus a research-grade OSF API CLI"
+requires-python = ">=3.11"
+dependencies = [
+  "lxml>=5.3.0",
+  "python-docx>=1.2.0",
+  "requests>=2.31.0",
+]
+
+[project.scripts]
+osf = "osf_api_cli.cli:main"
+osf-api = "osf_api_cli.cli:main"
+
+[tool.setuptools]
+packages = ["osf_api_cli", "osf_workflow"]

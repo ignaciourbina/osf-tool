@@ -1,33 +1,33 @@
-# osf-tool — Technical Specification
+# osf-tool - Technical Specification
 
 ## 1. Purpose
 
-Structured, type-safe Python API for parsing, inspecting, editing, versioning, and
-regenerating OSF Preregistration documents stored as `.docx` files. Templated from
-the `irb-tool` architecture, adapted to the OSF Preregistration form structure.
+Structured Python API for parsing, inspecting, editing, versioning, and regenerating OSF Preregistration documents stored as `.docx` files. This package borrows the `irb-tool` workflow pattern, but the OSF template uses a different form structure.
 
 ## 2. Source Document Analysis
 
-**File:** `OSF Preregistration.docx` (canonical OSF template)
+**File:** `OSF Preregistration.docx`
 
 | Metric | Value |
 |--------|-------|
 | Total paragraphs | 217 |
-| Heading 1 (major sections) | 7 |
-| Heading 3 (question fields) | 29 |
-| Tables (1x1 response areas) | 22 |
-| Tables (structural/instruction) | 2 |
-| Checkboxes (w14:checkbox) | 0 |
-| Structured Doc Tags (w:sdt) | 0 |
+| Heading 1 sections | 7 |
+| Heading 3 headings | 29 |
+| Parsed fields | 28 |
+| Tables | 24 |
+| Response tables (1x1) | 22 |
+| Structural/instruction tables | 2 |
+| Checkboxes (`w14:checkbox`) | 0 |
+| Structured Doc Tags (`w:sdt`) | 0 |
 
 ### 2.1 Document Structure
 
-The OSF form uses a **Heading 1 → Heading 3** hierarchy (no numbered sections):
+The OSF form uses a `Heading 1 -> Heading 3` hierarchy. The parser skips the instruction preamble and ignores the blank `Heading 3` that appears after `License`.
 
-```
-Heading 2: Instructions              (preamble — skip)
+```text
+Heading 2: Instructions              (preamble - skip)
 Heading 1: Metadata                  (major section)
-  Heading 3: Title*                  (question)
+  Heading 3: Title*                  (field)
     [normal paragraphs: prompt/help text]
     [1x1 table: response entry area]
   Heading 3: Description*
@@ -37,58 +37,44 @@ Heading 1: Study Information
     ...
 Heading 1: Design Plan
   Heading 3: Study type*
-    [normal paragraphs: radio options listed inline]
-  Heading 3: Blinding*
-    [normal paragraphs: multi-select options listed inline]
-  ...
+    [normal paragraphs: option text + prompt/help]
+    [1x1 table: response entry area]
 ```
 
 ### 2.2 Response Entry Mechanism
 
-Unlike the IRB protocol (which uses "Block Text" paragraphs and `w14:checkbox` XML),
-the OSF form uses **1x1 tables** as text entry areas. Researchers type their
-responses inside the single cell of a 1x1 table.
+Unlike the IRB protocol, the OSF form uses 1x1 tables as text entry areas. The parser and writer operate on table cells, not checkbox XML or content controls.
 
 ### 2.3 Response Types
 
-| Type | Count | Mechanism | Examples |
-|------|-------|-----------|----------|
-| `FREE_TEXT` | 22 | 1x1 table cell | Title, Description, Hypotheses, Study design, ... |
-| `RADIO` | 3 | Options listed as normal paragraphs before table | License (15 options), Study type (4 options), Existing data (5 options) |
-| `MULTI_SELECT` | 1 | Options listed as normal paragraphs | Blinding (4 options) |
-| `TAG_LIST` | 2 | Free-text comma-separated | Subject, Tags |
-| `CONTRIBUTOR_LIST` | 1 | Free-text structured | Contributors |
+The current model has three canonical response types:
 
-For the programmatic model, RADIO and MULTI_SELECT selections are stored as
-metadata alongside the response. The docx itself has no checkbox XML — selections
-are tracked in the JSON serialization and written back as bold/marked text.
+| ResponseType | Count | Mechanism | Notes |
+|---|---:|---|---|
+| `FREE_TEXT` | 24 | 1x1 table cell | Includes `title`, `description`, `contributors`, `subject`, `tags`, and the other free-text fields |
+| `RADIO` | 3 | Plain-text label written to the response cell | `license`, `study_type`, `existing_data` |
+| `MULTI_SELECT` | 1 | Newline-separated labels written to the response cell | `blinding` |
 
-**Simplified to 3 canonical types for v1:**
-
-| ResponseType | Input | Description |
-|---|---|---|
-| `FREE_TEXT` | `str` | Open text entry (covers TAG_LIST, CONTRIBUTOR_LIST) |
-| `RADIO` | `str` | One selected option from a known set |
-| `MULTI_SELECT` | `dict[str, bool]` | Multiple options, each on/off |
+`subject`, `tags`, and `contributors` are treated as plain free-text fields in this implementation. There are no dedicated `TAG_LIST` or `CONTRIBUTOR_LIST` response classes.
 
 ## 3. Data Model
 
 ### 3.1 Section Hierarchy
 
-```
-OSFSection (major)          → keyed by slug: "metadata", "study_information", ...
-  OSFField (question)       → keyed by slug: "title", "hypotheses", "study_type", ...
+```text
+OSFSection (major section) -> keyed by slug: "metadata", "study_information", ...
+  OSFField (question)      -> keyed by slug: "title", "hypotheses", "study_type", ...
 ```
 
-Slugs are derived from Heading text: `"Study design*"` → `"study_design"`.
+Slugs are derived from heading text with `_slugify()`, plus a small set of parser overrides for awkward headings such as `Inference criteria ` and `Existing data*`.
 
 ### 3.2 Core Classes
 
 ```python
 class ResponseType(Enum):
-    FREE_TEXT     = "free_text"
-    RADIO         = "radio"
-    MULTI_SELECT  = "multi_select"
+    FREE_TEXT = "free_text"
+    RADIO = "radio"
+    MULTI_SELECT = "multi_select"
 
 @dataclass
 class FreeTextResponse:
@@ -96,39 +82,39 @@ class FreeTextResponse:
 
 @dataclass
 class RadioResponse:
-    selected: str | None          # label of selected option, or None
-    options: list[str]            # all available options
+    selected: str | None
+    options: list[str]
 
 @dataclass
 class MultiSelectResponse:
-    selections: dict[str, bool]   # label → checked
+    selections: dict[str, bool]
 
 Response = FreeTextResponse | RadioResponse | MultiSelectResponse
 
 @dataclass
 class OSFField:
-    slug: str                     # "hypotheses", "study_type"
-    title: str                    # "Hypotheses*"
-    required: bool                # True if title ends with *
-    section_slug: str             # parent section slug
-    prompt_text: str              # concatenated help/example text
+    slug: str
+    title: str
+    required: bool
+    section_slug: str
+    prompt_text: str
     response_type: ResponseType
     response: Response
-    table_index: int | None       # index into doc.tables for write-back
-    para_indices: list[int]       # paragraph indices (heading + prompt paras)
+    table_index: int | None
+    para_indices: list[int]
     dirty: bool = False
 
 @dataclass
 class OSFSection:
-    slug: str                     # "design_plan"
-    title: str                    # "Design Plan"
+    slug: str
+    title: str
     fields: OrderedDict[str, OSFField]
-    para_index: int               # paragraph index of Heading 1
+    para_index: int
 
 @dataclass
 class OSFFormMetadata:
-    template_name: str            # "OSF Preregistration"
-    source_path: str | None
+    template_name: str = "OSF Preregistration"
+    source_path: str | None = None
 
 class OSFPreregistration:
     metadata: OSFFormMetadata
@@ -137,12 +123,12 @@ class OSFPreregistration:
 
     # Query
     get_field(slug: str) -> OSFField
-    get_field(section_slug: str, field_slug: str) -> OSFField
     all_fields() -> list[OSFField]
     required_fields() -> list[OSFField]
+    section_names() -> list[str]
     summary() -> dict
 
-    # Edit (type-checked)
+    # Edit
     edit_field(slug: str, value) -> None
 
     # Compare
@@ -151,144 +137,151 @@ class OSFPreregistration:
     # Serialize
     to_dict() -> dict
     to_markdown() -> str
-    @classmethod from_dict(d) -> OSFPreregistration
+    @classmethod
+    from_dict(d) -> OSFPreregistration
 ```
 
 ### 3.3 Type Protection
 
-| Field's ResponseType | Accepted input to `edit_field()` | Rejected |
+| Field response type | Accepted input to `edit_field()` | Rejected |
 |---|---|---|
 | `FREE_TEXT` | `str` | dict, list, int |
-| `RADIO` | `str` (must be in options list) | dict, unknown option |
-| `MULTI_SELECT` | `dict[str, bool]` (keys must be known) | str, list |
+| `RADIO` | `str` that matches one of the known options | dict, unknown option |
+| `MULTI_SELECT` | `dict[str, bool]` using known option labels | str, list, unknown label |
 
 ## 4. Module Architecture
 
-```
+```text
 osf-tool/
+├── doc/
+│   └── TECH_SPEC.md
 ├── osf_workflow/
 │   ├── __init__.py          # Public API re-exports
 │   ├── schema.py            # Data model (OSFPreregistration, OSFField, ResponseType, ...)
-│   ├── parser.py            # DOCX → OSFPreregistration
-│   ├── writer.py            # OSFPreregistration → DOCX (surgical write-back)
+│   ├── parser.py            # DOCX -> OSFPreregistration
+│   ├── writer.py            # OSFPreregistration -> DOCX
 │   └── versioning.py        # JSON snapshot save/load/diff
+├── output/
+├── scripts/
+│   └── fill_pap_draft.py
 ├── tests/
-│   ├── __init__.py
-│   ├── conftest.py          # Shared fixtures (parsed form, tmp dirs)
-│   ├── test_parser.py       # Parsing correctness
-│   ├── test_schema.py       # Type protection, edit validation
-│   ├── test_writer.py       # Write-back round-trip
-│   └── test_versioning.py   # Snapshot save/load/diff
-├── TECH_SPEC.md             # This file
-├── requirements.txt
-└── Makefile
+│   ├── conftest.py
+│   ├── test_parser.py
+│   ├── test_schema.py
+│   ├── test_writer.py
+│   └── test_versioning.py
+├── versions/
+├── Makefile
+└── requirements.txt
 ```
 
 ## 5. Parser Pipeline
 
-### Step 1: Walk body XML elements (not just paragraphs)
+### Step 1: Walk body XML elements
 
-Unlike `doc.paragraphs` (which skips tables), walk `doc.element.body` children
-to track both `w:p` (paragraph) and `w:tbl` (table) elements in document order.
+The parser walks `doc.element.body` so it can see paragraphs and tables in document order.
 
 ### Step 2: Identify section boundaries
 
-- `Heading 1` → new `OSFSection`
-- `Heading 3` → new `OSFField` under current section
-- Skip `Heading 2` (instructions preamble)
+- `Heading 1` starts a new `OSFSection`
+- `Heading 3` starts a new `OSFField`
+- `Heading 2` is the instruction preamble and is skipped
 
 ### Step 3: Collect prompt text
 
-All `normal`-style paragraphs between a `Heading 3` and the next heading/table
-form the field's `prompt_text`.
+Normal paragraphs between the field heading and the response table are concatenated into `prompt_text`.
 
 ### Step 4: Classify response type
 
-Use `FIELD_TYPE_OVERRIDES` dict for known radio/multi-select fields:
+`FIELD_TYPE_OVERRIDES` currently hard-codes four non-default fields:
 
 ```python
 FIELD_TYPE_OVERRIDES = {
-    "license":       ResponseType.RADIO,
-    "study_type":    ResponseType.RADIO,
+    "license": ResponseType.RADIO,
+    "study_type": ResponseType.RADIO,
     "existing_data": ResponseType.RADIO,
-    "blinding":      ResponseType.MULTI_SELECT,
+    "blinding": ResponseType.MULTI_SELECT,
 }
 ```
 
 Everything else defaults to `FREE_TEXT`.
 
-### Step 5: Extract radio/multi-select options
+### Step 5: Populate canonical option sets
 
-For RADIO and MULTI_SELECT fields, options are the normal-style paragraphs
-between the descriptive prompt and the next heading/table. These are identified
-by their position and content pattern (short, no "Example:" prefix).
+Radio and multi-select fields do not infer options from nearby paragraphs. A second pass assigns the canonical option lists from hard-coded slug-specific tables in `parser.py`.
 
 ### Step 6: Link tables to fields
 
-Walk the body elements. When a `w:tbl` (1x1) is encountered, link it to the
-most recent `OSFField`. Store `table_index` for write-back.
+When the parser encounters a 1x1 table, it stores the corresponding `table_index` on the current field.
 
 ### Step 7: Read existing responses
 
-If table cell is non-empty, populate `FreeTextResponse.text`.
-For RADIO/MULTI_SELECT, responses remain `None`/all-false in the blank template.
+If a 1x1 table already contains text, the parser loads it into `FreeTextResponse.text`. Radio and multi-select fields are initialized empty and remain unselected in the parsed model.
 
 ## 6. Writer Pipeline
 
-### Preservation-First Strategy (same as irb-tool)
+### Preservation-First Strategy
 
-1. Open original DOCX with `python-docx`
+1. Open the original DOCX with `python-docx`
 2. For each field where `dirty=True`:
-   - **FREE_TEXT**: locate `doc.tables[table_index]`, set cell text
-   - **RADIO**: write selected option label into the table cell (and optionally
-     bold the matching option paragraph)
-   - **MULTI_SELECT**: write comma-separated selected labels into table cell
-3. Save to new file — all non-modified content is byte-identical
+   - `FREE_TEXT`: write the string into the linked response cell
+   - `RADIO`: write the selected label into the linked response cell
+   - `MULTI_SELECT`: write the selected labels joined by newlines into the linked response cell
+3. Save to a new file
+
+The implementation preserves document structure and unchanged content semantically, but it does not guarantee byte-identical output because `python-docx` rewrites the package on save.
 
 ### Table Cell Write-Back
 
 ```python
 def _set_table_cell_text(table, text: str) -> None:
     cell = table.rows[0].cells[0]
-    # Clear existing paragraphs, set text on first paragraph
-    # Preserve cell formatting (borders, shading)
+    # Replace cell text while preserving the first paragraph's formatting
 ```
 
-## 7. Versioning (cloned from irb-tool)
+## 7. Versioning
 
-Identical pattern:
+The versioning layer is a thin JSON snapshot wrapper:
+
 - `VersionManager(versions_dir)`
-- `.save(form, label, notes)` → JSON snapshot
-- `.load(label)` → `OSFPreregistration`
-- `.diff(label_a, label_b)` → `list[FieldDiff]`
+- `.save(form, label, notes="") -> VersionRecord`
+- `.load(label) -> OSFPreregistration`
+- `.list_versions() -> list[VersionRecord]`
+- `.diff(label_a, label_b) -> list[FieldDiff]`
+
+Snapshots are stored as `<label>.json` files under `versions/`.
 
 ## 8. Field Inventory
 
-### Metadata (5 fields)
+### Metadata (6 fields)
+
 | # | Field | Slug | Required | Type |
 |---|-------|------|----------|------|
 | 1 | Title | `title` | yes | FREE_TEXT |
 | 2 | Description | `description` | yes | FREE_TEXT |
 | 3 | Contributors | `contributors` | yes | FREE_TEXT |
-| 4 | License | `license` | yes | RADIO (15 options) |
+| 4 | License | `license` | yes | RADIO (17 options) |
 | 5 | Subject | `subject` | yes | FREE_TEXT |
 | 6 | Tags | `tags` | no | FREE_TEXT |
 
 ### Study Information (1 field)
+
 | # | Field | Slug | Required | Type |
 |---|-------|------|----------|------|
 | 7 | Hypotheses | `hypotheses` | yes | FREE_TEXT |
 
 ### Design Plan (5 fields)
+
 | # | Field | Slug | Required | Type |
 |---|-------|------|----------|------|
 | 8 | Study type | `study_type` | yes | RADIO (4 options) |
 | 9 | Blinding | `blinding` | yes | MULTI_SELECT (4 options) |
-| 10 | Is there any additional blinding... | `additional_blinding` | no | FREE_TEXT |
+| 10 | Is there any additional blinding in this study? | `additional_blinding` | no | FREE_TEXT |
 | 11 | Study design | `study_design` | yes | FREE_TEXT |
 | 12 | Randomization | `randomization` | no | FREE_TEXT |
 
 ### Sampling Plan (6 fields)
+
 | # | Field | Slug | Required | Type |
 |---|-------|------|----------|------|
 | 13 | Existing data | `existing_data` | yes | RADIO (5 options) |
@@ -299,6 +292,7 @@ Identical pattern:
 | 18 | Stopping rule | `stopping_rule` | no | FREE_TEXT |
 
 ### Variables (3 fields)
+
 | # | Field | Slug | Required | Type |
 |---|-------|------|----------|------|
 | 19 | Manipulated variables | `manipulated_variables` | no | FREE_TEXT |
@@ -306,6 +300,7 @@ Identical pattern:
 | 21 | Indices | `indices` | no | FREE_TEXT |
 
 ### Analysis Plan (6 fields)
+
 | # | Field | Slug | Required | Type |
 |---|-------|------|----------|------|
 | 22 | Statistical models | `statistical_models` | yes | FREE_TEXT |
@@ -316,6 +311,7 @@ Identical pattern:
 | 27 | Exploratory analysis | `exploratory_analysis` | no | FREE_TEXT |
 
 ### Other (1 field)
+
 | # | Field | Slug | Required | Type |
 |---|-------|------|----------|------|
 | 28 | Other | `other` | no | FREE_TEXT |
@@ -324,13 +320,13 @@ Identical pattern:
 
 ## 9. Dependencies
 
-```
+```text
 python-docx >= 1.2.0
 lxml >= 5.3.0
 pytest >= 8.0.0    # dev
 ```
 
-No `docxtpl` needed (no template rendering — surgical edits only).
+No `docxtpl` is needed because the implementation performs surgical edits rather than template rendering.
 
 ## 10. Key Differences from irb-tool
 
@@ -338,8 +334,8 @@ No `docxtpl` needed (no template rendering — surgical edits only).
 |--------|----------|----------|
 | Section addressing | Numbered (`3.1`, `14.5`) | Slug-based (`hypotheses`, `study_type`) |
 | Response areas | "Block Text" paragraphs | 1x1 tables |
-| Checkbox mechanism | `w14:checkbox` XML elements | None (radio/multi-select as text) |
-| Nodes | 105 | 28 |
+| Checkbox mechanism | `w14:checkbox` XML elements | None |
+| Parsed fields | 105 | 28 |
 | Preamble extraction | Title, Version, PI from markers | Template name only |
 | Section type overrides | 17 hardcoded | 4 hardcoded |
 | Write-back target | Paragraph runs | Table cells |
