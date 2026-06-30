@@ -1,12 +1,5 @@
-"""Standalone OSF toolkit SDK and CLI."""
+"""osf_api_cli — Python client and CLI for the OSF API v2."""
 
-from .client import DEFAULT_API_BASE, DEFAULT_TIMEOUT, OSFClient, WATERBUTLER_BASE
-from .errors import OSFClientError
+from .client import OSFClient
 
-__all__ = [
-    "DEFAULT_API_BASE",
-    "DEFAULT_TIMEOUT",
-    "OSFClient",
-    "OSFClientError",
-    "WATERBUTLER_BASE",
-]
+__all__ = ["OSFClient"]

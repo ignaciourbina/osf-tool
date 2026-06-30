@@ -12,3 +12,4 @@ dist/
 registration-packets/*/venv/
 registration-packets/*/__pycache__/
 registration-packets/ai-communication-and-cooperation-extension/aicoop-analysis/
+output/

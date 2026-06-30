@@ -56,12 +56,12 @@ def anova_power(f_effect: float, group_ns: np.ndarray, alpha: float = ALPHA) -> 
 
 # ── t-test power (non-central t) ────────────────────────────────────
 def ttest_power(d: float, n1: int, n2: int, alpha: float = ALPHA) -> float:
-    """Power for independent two-sample t-test (two-tailed), unequal n."""
+    """Power for independent two-sample t-test (one-tailed), unequal n."""
     df = n1 + n2 - 2
     se = np.sqrt(1 / n1 + 1 / n2)
     ncp = d / se  # non-centrality parameter
-    crit = stats.t.ppf(1 - alpha / 2, df)
-    return 1 - stats.nct.cdf(crit, df, ncp) + stats.nct.cdf(-crit, df, ncp)
+    crit = stats.t.ppf(1 - alpha, df)  # one-tailed critical value
+    return 1 - stats.nct.cdf(crit, df, ncp)
 
 
 # ── Find minimum detectable effect size at target power ──────────────
@@ -88,7 +88,7 @@ def main() -> None:
     print(f"Allocation (1/6, 1/6, 2/6, 2/6): n = {n.tolist()}")
     print(f"  HH group  (c1+c2): n = {n_hh}")
     print(f"  AIH group (c3+c4): n = {n_aih}")
-    print(f"Alpha = {ALPHA}, two-tailed")
+    print(f"Alpha = {ALPHA}, one-tailed (directional hypotheses)")
 
     # ── ANOVA: minimum detectable f ──────────────────────────────────
     mdes_f = find_mdes(lambda f: anova_power(f, n))

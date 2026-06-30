@@ -230,6 +230,78 @@ def dry_run(draft: dict) -> bool:
     return len(all_issues) == 0
 
 
+# Mapping from internal q-keys to OSF Preregistration v4 atomic schema keys.
+# The v4 schema (697b72f611a8e98484c6139b) uses "344-{block_index}" keys.
+# The select option strings also changed from v3 to v4.
+Q_TO_ATOMIC = {
+    "q2":          "344-2",   # Research questions or hypotheses
+    "q3":          "344-17",  # Study type (multi-select in v4)
+    "q4":          "344-32",  # Blinding
+    "q5":          "344-38",  # Additional blinding
+    "q6.question": "344-40",  # Study design
+    "q6.uploader": "344-42",  # Study design file upload
+    "q7":          "344-44",  # Randomization
+    "q8":          "344-4",   # Foreknowledge of data (was "Existing data")
+    "q9":          "344-14",  # Explanation of foreknowledge
+    "q10.question":"344-47",  # Data collection procedures
+    "q10.uploader":"344-49",  # Data collection file upload
+    "q11":         "344-51",  # Sample size
+    "q12":         "344-53",  # Sample size rationale
+    "q13":         "344-55",  # Starting and stopping rules
+    "q14.question":"344-58",  # Manipulated variables
+    "q14.uploader":"344-60",  # Manipulated variables file upload
+    "q15.question":"344-62",  # Measured variables
+    "q15.uploader":"344-64",  # Measured variables file upload
+    "q16.question":"344-66",  # Indices
+    "q16.uploader":"344-68",  # Indices file upload
+    "q17.question":"344-71",  # Statistical models
+    "q17.uploader":"344-73",  # Statistical models file upload
+    "q18":         "344-75",  # Transformations
+    "q19":         "344-77",  # Inference criteria
+    "q20":         "344-79",  # Data inclusion and exclusion
+    "q21":         "344-81",  # Missing data
+    "q22":         "344-83",  # Other planned analysis
+    "q23":         "344-86",  # Context and additional information
+}
+
+# v3 → v4 option string translations
+OPTION_TRANSLATIONS = {
+    # q3 (study type): v3 was single-select, v4 is multi-select with different wording
+    "Experiment - A researcher randomly assigns treatments to study subjects, this includes field or lab experiments. This is also known as an intervention experiment and includes randomized controlled trials.":
+        "Randomized Experiment: Must include random assignment of subjects to treatments or conditions. This usually includes lab experiments, field experiments, intervention experiments, randomized controlled trials, and A/B testing.",
+    # q4 (blinding)
+    "For studies that involve human subjects, they will not know the treatment group to which they have been assigned.":
+        "Subjects will not be aware of the assigned treatment during data collection (either because the subjects are not human participants or because of blinding procedures).",
+    # q8 (existing data / foreknowledge)
+    "Registration prior to creation of data":
+        "Data does not yet exist. No part of the data that will be used for this analysis plan exists, and no part will be generated until after this plan is registered.",
+}
+
+
+def translate_responses(responses: dict) -> dict:
+    """Translate from internal q-keys to atomic schema 344-N keys."""
+    translated = {}
+    for q_key, value in responses.items():
+        atomic_key = Q_TO_ATOMIC.get(q_key)
+        if not atomic_key:
+            print(f"  WARNING: No mapping for key '{q_key}', skipping")
+            continue
+
+        # Translate select option strings
+        if isinstance(value, str) and value in OPTION_TRANSLATIONS:
+            value = OPTION_TRANSLATIONS[value]
+        elif isinstance(value, list):
+            value = [OPTION_TRANSLATIONS.get(v, v) for v in value]
+
+        # v4 study type (q3) is multi-select, wrap string in list
+        if q_key == "q3" and isinstance(value, str):
+            value = [value]
+
+        translated[atomic_key] = value
+
+    return translated
+
+
 def submit(draft: dict) -> None:
     """Create a draft registration on OSF."""
     from osf_api_cli.client import OSFClient
@@ -239,10 +311,18 @@ def submit(draft: dict) -> None:
     description = draft.get("description", "")
     responses = draft["registration_responses"]
 
+    # Translate keys for atomic schema
+    translated = translate_responses(responses)
+
+    # Add causal interpretation (new in v4, not in our q-keys)
+    translated["344-27"] = [
+        "Direct inference on causal relationship(s): This study is intended to infer or estimate a causal relationship between two or more variables. It is designed specifically for the purposes of causal inference or identification."
+    ]
+
     print(f"\nAbout to create draft registration on OSF:")
     print(f"  Title: {title}")
     print(f"  Schema: {schema_id}")
-    print(f"  Keys: {len(responses)}")
+    print(f"  Response keys: {len(translated)}")
     confirm = input("\nProceed? [y/N] ").strip().lower()
     if confirm != "y":
         print("Aborted.")
@@ -256,13 +336,13 @@ def submit(draft: dict) -> None:
         title=title,
         description=description,
     )
-    draft_id = draft_data.id
+    draft_id = draft_data["id"]
     print(f"  Created draft: {draft_id}")
 
     print("Step 2: Updating registration responses...")
     client.update_draft_registration(
         draft_id,
-        registration_responses=responses,
+        registration_responses=translated,
     )
     print("  Registration responses saved.")
 

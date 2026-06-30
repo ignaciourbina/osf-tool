@@ -15,6 +15,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -32,10 +35,10 @@ OUTPUT_DIR = SCRIPT_DIR.parent / "output"
 # Adjust to match your theoretical expectations.
 THEORIZED = {
     "alpha": 0.0,          # intercept: ~50% baseline cooperation
-    "beta_opp": -0.5,      # AI opponent reduces cooperation (~12pp)
-    "beta_comm": 0.5,      # communication increases cooperation (~12pp)
-    "beta_inter": -0.2,    # interaction: comm effect smaller with AI
-    "beta_game": 0.3,      # SH slightly higher cooperation than PD
+    "beta_opp": -0.8,      # AI opponent reduces cooperation (moderate)
+    "beta_comm": 0.8,      # communication increases cooperation (moderate)
+    "beta_inter": -0.4,    # interaction: comm effect smaller with AI
+    "beta_game": 0.8,      # SH higher cooperation than PD (moderate)
     "tau_intercept": 0.5,   # pair-level SD for random intercept
     "tau_slope": 0.3,       # pair-level SD for random slope (game)
     "rho": 0.2,             # correlation between intercept and slope
@@ -49,6 +52,15 @@ CONDITIONS = {
     2: (0, 1),  # HH, comm
     3: (1, 0),  # AIH, no comm
     4: (1, 1),  # AIH, comm
+}
+
+# Predicted direction for each coefficient (directional hypotheses).
+# "negative" = H predicts coeff < 0; "positive" = H predicts coeff > 0.
+PREDICTED_DIRECTION = {
+    "beta_opp": "negative",    # H1: AI reduces cooperation
+    "beta_comm": "positive",   # H2: communication increases cooperation
+    "beta_inter": "negative",  # H3: comm effect smaller with AI
+    "beta_game": "positive",   # SH has higher cooperation than PD
 }
 
 
@@ -173,13 +185,26 @@ def fit_and_summarize(
     for param in params:
         samples = fit[param].flatten()
         lo, hi = hdi(samples)
+        # Directional detection: check if 95% HDI falls entirely
+        # in the predicted direction
+        direction = PREDICTED_DIRECTION.get(param)
+        if direction == "negative":
+            detected = hi < 0
+            prob_correct = float(np.mean(samples < 0))
+        elif direction == "positive":
+            detected = lo > 0
+            prob_correct = float(np.mean(samples > 0))
+        else:
+            detected = (lo > 0) or (hi < 0)
+            prob_correct = None
         summaries[param] = {
             "mean": float(np.mean(samples)),
             "median": float(np.median(samples)),
             "sd": float(np.std(samples)),
             "hdi_lo": lo,
             "hdi_hi": hi,
-            "excludes_zero": (lo > 0) or (hi < 0),
+            "detected": detected,
+            "prob_correct_direction": prob_correct,
         }
 
     # Also report random effects SDs
@@ -197,6 +222,23 @@ def fit_and_summarize(
     return summaries
 
 
+def _run_single_sim_inprocess(sim_idx, model_code, theorized, n_per_condition, num_chains, num_samples):
+    """Run a single simulation in the current process."""
+    seed = 42000 + sim_idx
+    df = generate_synthetic_data(theorized, n_per_condition, seed=seed)
+    stan_data = df_to_stan_data(df)
+    try:
+        summary = fit_and_summarize(
+            model_code, stan_data,
+            num_chains=num_chains,
+            num_samples=num_samples,
+            seed=seed,
+        )
+        return {"sim": sim_idx, "summary": summary}
+    except Exception as e:
+        return {"sim": sim_idx, "error": str(e)}
+
+
 def run_assurance(
     model_code: str,
     theorized: dict[str, float],
@@ -204,53 +246,111 @@ def run_assurance(
     n_per_condition: int = N_PER_CONDITION,
     num_chains: int = 4,
     num_samples: int = 1000,
+    n_workers: int = 1,
 ) -> dict:
     """Run the assurance analysis across n_sims simulated datasets."""
     params_of_interest = ["beta_opp", "beta_comm", "beta_inter", "beta_game"]
     detections = {p: 0 for p in params_of_interest}
     all_summaries = []
 
-    print(f"\nRunning {n_sims} simulations...")
+    print(f"\nRunning {n_sims} simulations ({n_workers} workers, {num_chains} chains each)...")
     print(f"  N per condition: {n_per_condition}")
     print(f"  Theorized coefficients (log-odds):")
     for k, v in theorized.items():
         print(f"    {k}: {v}")
     print()
 
-    for sim in range(n_sims):
-        t0 = time.time()
-        seed = 42000 + sim
+    t_start = time.time()
 
-        # Generate data
-        df = generate_synthetic_data(theorized, n_per_condition, seed=seed)
-        stan_data = df_to_stan_data(df)
-
-        # Fit model
-        try:
-            summary = fit_and_summarize(
-                model_code, stan_data,
-                num_chains=num_chains,
-                num_samples=num_samples,
-                seed=seed,
+    if n_workers <= 1:
+        # Sequential mode
+        for sim in range(n_sims):
+            t0 = time.time()
+            result = _run_single_sim_inprocess(
+                sim, model_code, theorized, n_per_condition, num_chains, num_samples
             )
-        except Exception as e:
-            print(f"  Sim {sim + 1}/{n_sims}: FAILED ({e})")
-            continue
+            elapsed = time.time() - t0
 
-        elapsed = time.time() - t0
+            if "error" in result:
+                print(f"  Sim {sim + 1}/{n_sims}: FAILED ({result['error']})")
+                continue
 
-        # Track detections
-        for p in params_of_interest:
-            if summary[p]["excludes_zero"]:
-                detections[p] += 1
+            summary = result["summary"]
+            for p in params_of_interest:
+                if summary[p]["detected"]:
+                    detections[p] += 1
 
-        status = " | ".join(
-            f"{p}={'Y' if summary[p]['excludes_zero'] else 'n'}"
-            for p in params_of_interest
-        )
-        print(f"  Sim {sim + 1}/{n_sims} ({elapsed:.1f}s): {status}")
+            status = " | ".join(
+                f"{p}={'Y' if summary[p]['detected'] else 'n'}"
+                for p in params_of_interest
+            )
+            print(f"  Sim {sim + 1}/{n_sims} ({elapsed:.1f}s): {status}")
+            all_summaries.append(summary)
+    else:
+        # Parallel mode via subprocesses (avoids PyStan/httpstan fork issues)
+        import tempfile
+        tmpdir = tempfile.mkdtemp(prefix="assurance_")
+        python = sys.executable
+        script = str(SCRIPT_DIR / "assurance_analysis.py")
 
-        all_summaries.append(summary)
+        # Build per-sim CLI args
+        coeff_args = []
+        for key, val in theorized.items():
+            coeff_args.extend([f"--{key.replace('_', '-')}", str(val)])
+
+        # Launch all sims as subprocesses
+        processes: dict[int, tuple[subprocess.Popen, str]] = {}
+        running: set[int] = set()
+        next_sim = 0
+        completed = 0
+
+        while completed < n_sims:
+            # Launch up to n_workers concurrent sims
+            while len(running) < n_workers and next_sim < n_sims:
+                out_file = os.path.join(tmpdir, f"sim_{next_sim}.json")
+                cmd = [
+                    python, script, "--fit-one",
+                    "--n-per-condition", str(n_per_condition),
+                    "--num-chains", str(num_chains),
+                    "--num-samples", str(num_samples),
+                    *coeff_args,
+                    "--sim-seed", str(42000 + next_sim),
+                    "--output-json", out_file,
+                ]
+                proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                processes[next_sim] = (proc, out_file)
+                running.add(next_sim)
+                next_sim += 1
+
+            # Poll for completions
+            newly_done = set()
+            for sim_idx in running:
+                proc, out_file = processes[sim_idx]
+                ret = proc.poll()
+                if ret is not None:
+                    newly_done.add(sim_idx)
+                    completed += 1
+                    if ret == 0 and os.path.exists(out_file):
+                        with open(out_file) as f:
+                            summary = json.load(f)
+                        for p in params_of_interest:
+                            if summary[p]["detected"]:
+                                detections[p] += 1
+                        status = " | ".join(
+                            f"{p}={'Y' if summary[p]['detected'] else 'n'}"
+                            for p in params_of_interest
+                        )
+                        print(f"  Sim {sim_idx + 1}/{n_sims} [{completed}/{n_sims} done]: {status}")
+                        all_summaries.append(summary)
+                    else:
+                        print(f"  Sim {sim_idx + 1}/{n_sims}: FAILED (exit {ret})")
+            running -= newly_done
+
+            if not newly_done and running:
+                time.sleep(1)
+
+    total_elapsed = time.time() - t_start
+    print(f"\n  Total time: {total_elapsed:.0f}s ({total_elapsed/60:.1f}min)")
 
     # Compute assurance
     n_completed = len(all_summaries)
@@ -283,6 +383,12 @@ def main() -> None:
                         help="Samples per chain (default: 1000)")
     parser.add_argument("--fit-one", action="store_true",
                         help="Fit a single dataset and print summary (quick check)")
+    parser.add_argument("--n-workers", type=int, default=1,
+                        help="Parallel workers for simulations (default: 1, try ncores/chains)")
+    parser.add_argument("--sim-seed", type=int, default=42,
+                        help=argparse.SUPPRESS)  # internal: seed for subprocess mode
+    parser.add_argument("--output-json", type=str, default="",
+                        help=argparse.SUPPRESS)  # internal: write summary JSON for subprocess mode
 
     # Allow overriding theorized coefficients
     for key, default in THEORIZED.items():
@@ -300,46 +406,61 @@ def main() -> None:
     model_code = STAN_MODEL.read_text(encoding="utf-8")
 
     if args.fit_one:
-        print("=" * 65)
-        print("SINGLE FIT CHECK")
-        print("=" * 65)
+        seed = args.sim_seed
+        quiet = bool(args.output_json)  # quiet mode when called as subprocess
 
-        df = generate_synthetic_data(theorized, args.n_per_condition, seed=42)
-        print(f"\nSynthetic data: {len(df)} observations, "
-              f"{df['pair_id'].nunique()} pairs")
-        print(f"  Conditions: {df.groupby('condition').size().to_dict()}")
-        print(f"  Cooperation rate: {df['cooperation'].mean():.3f}")
-        print(f"  By condition: {df.groupby('condition')['cooperation'].mean().to_dict()}")
+        if not quiet:
+            print("=" * 65)
+            print("SINGLE FIT CHECK")
+            print("=" * 65)
 
-        # Save synthetic data
-        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        data_path = OUTPUT_DIR / "synthetic_cooperation_data.csv"
-        df.to_csv(data_path, index=False)
-        print(f"\n  Saved synthetic data to: {data_path}")
+        df = generate_synthetic_data(theorized, args.n_per_condition, seed=seed)
+        if not quiet:
+            print(f"\nSynthetic data: {len(df)} observations, "
+                  f"{df['pair_id'].nunique()} pairs")
+            print(f"  Conditions: {df.groupby('condition').size().to_dict()}")
+            print(f"  Cooperation rate: {df['cooperation'].mean():.3f}")
+            print(f"  By condition: {df.groupby('condition')['cooperation'].mean().to_dict()}")
+
+            # Save synthetic data
+            OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+            data_path = OUTPUT_DIR / "synthetic_cooperation_data.csv"
+            df.to_csv(data_path, index=False)
+            print(f"\n  Saved synthetic data to: {data_path}")
 
         stan_data = df_to_stan_data(df)
-        print(f"\nFitting Stan model ({args.num_chains} chains, "
-              f"{args.num_samples} samples each)...")
+        if not quiet:
+            print(f"\nFitting Stan model ({args.num_chains} chains, "
+                  f"{args.num_samples} samples each)...")
 
         t0 = time.time()
         summary = fit_and_summarize(
             model_code, stan_data,
             num_chains=args.num_chains,
             num_samples=args.num_samples,
-            seed=42,
+            seed=seed,
         )
         elapsed = time.time() - t0
+
+        # If called as subprocess, write JSON and exit
+        if args.output_json:
+            with open(args.output_json, "w") as f:
+                json.dump(summary, f)
+            return
+
         print(f"  Done in {elapsed:.1f}s\n")
 
         print(f"{'Parameter':<18s} {'Mean':>8s} {'Median':>8s} {'SD':>8s} "
-              f"{'HDI_lo':>8s} {'HDI_hi':>8s} {'Excl 0':>8s} {'True':>8s}")
-        print("-" * 82)
+              f"{'HDI_lo':>8s} {'HDI_hi':>8s} {'Detect':>8s} {'P(dir)':>8s} {'True':>8s}")
+        print("-" * 92)
         for param in ["alpha", "beta_opp", "beta_comm", "beta_inter", "beta_game"]:
             s = summary[param]
             true_val = theorized.get(param, "")
-            excl = "YES" if s["excludes_zero"] else "no"
+            det = "YES" if s["detected"] else "no"
+            pdir = f"{s['prob_correct_direction']:.3f}" if s["prob_correct_direction"] is not None else "n/a"
+            dirn = PREDICTED_DIRECTION.get(param, "none")
             print(f"{param:<18s} {s['mean']:8.3f} {s['median']:8.3f} {s['sd']:8.3f} "
-                  f"{s['hdi_lo']:8.3f} {s['hdi_hi']:8.3f} {excl:>8s} {true_val:8.3f}")
+                  f"{s['hdi_lo']:8.3f} {s['hdi_hi']:8.3f} {det:>8s} {pdir:>8s} {true_val:8.3f}")
 
         print()
         for name in ["tau_intercept", "tau_slope"]:
@@ -363,6 +484,7 @@ def main() -> None:
         n_per_condition=args.n_per_condition,
         num_chains=args.num_chains,
         num_samples=args.num_samples,
+        n_workers=args.n_workers,
     )
 
     # Print results
@@ -370,13 +492,14 @@ def main() -> None:
     print("ASSURANCE RESULTS")
     print("=" * 65)
     print(f"\nSimulations completed: {results['n_sims_completed']}/{results['n_sims_requested']}")
-    print(f"\nAssurance (prob. 95% HDI excludes zero):")
-    print(f"  {'Parameter':<18s} {'Assurance':>10s} {'Detections':>12s} {'Theorized':>12s}")
-    print(f"  {'-'*52}")
+    print(f"\nAssurance (prob. 95% HDI falls in predicted direction):")
+    print(f"  {'Parameter':<18s} {'Direction':>10s} {'Assurance':>10s} {'Detections':>12s} {'Theorized':>12s}")
+    print(f"  {'-'*64}")
     for param, assur in results["assurance"].items():
         det = results["detections"][param]
         true_val = theorized.get(param, 0)
-        print(f"  {param:<18s} {assur:10.1%} {det:>8d}/{results['n_sims_completed']:<3d} "
+        dirn = PREDICTED_DIRECTION.get(param, "—")
+        print(f"  {param:<18s} {dirn:>10s} {assur:10.1%} {det:>8d}/{results['n_sims_completed']:<3d} "
               f"{true_val:12.3f}")
 
     print(f"\nInterpretation:")

@@ -1,755 +1,299 @@
-"""Typed OSF client and resource services."""
+"""OSF API v2 client — thin wrapper over requests with JSON-API handling."""
 
 from __future__ import annotations
 
-import posixpath
-import time
-from collections.abc import Iterator
-from pathlib import Path, PurePosixPath
-from typing import Any
-from urllib.parse import quote, urlencode, urljoin
+import os
+from pathlib import Path
+from typing import Any, Iterator
 
 import requests
+from dotenv import load_dotenv
 
-from .config import DEFAULT_API_BASE, DEFAULT_TIMEOUT, ResolvedSettings, resolve_settings
-from .errors import (
-    OSFAuthError,
-    OSFConfigError,
-    OSFNotFoundError,
-    OSFRateLimitError,
-    OSFTransportError,
-    OSFValidationError,
-)
-from .models import (
-    Contributor,
-    DraftRegistration,
-    FileEntry,
-    Project,
-    Registration,
-    RegistrationSchema,
-    UploadResult,
-    User,
-    infer_object_id_timestamp,
-)
+# Load .env from project root
+_ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(_ENV_PATH)
 
-WATERBUTLER_BASE = "https://files.osf.io/v1/"
+_DEFAULT_BASE = "https://api.osf.io/v2"
 
 
-def _normalize_remote_path(path: str | None) -> str:
-    raw_path = (path or "/").strip()
-    if not raw_path:
-        return "/"
-    normalized = posixpath.normpath("/" + raw_path.lstrip("/"))
-    return "/" if normalized in {".", "/"} else normalized
+class OSFClientError(Exception):
+    """Raised when the OSF API returns an error response."""
+
+    def __init__(self, status_code: int, detail: str, response: requests.Response | None = None):
+        self.status_code = status_code
+        self.detail = detail
+        self.response = response
+        super().__init__(f"HTTP {status_code}: {detail}")
 
 
-def _split_remote_path(path: str) -> tuple[str, str]:
-    normalized = _normalize_remote_path(path)
-    return posixpath.dirname(normalized) or "/", posixpath.basename(normalized)
+class OSFClient:
+    """Authenticated client for the OSF API v2 (JSON-API)."""
 
+    def __init__(self, token: str | None = None, base_url: str | None = None):
+        self.token = token or os.environ.get("OSF_TOKEN")
+        if not self.token:
+            raise OSFClientError(0, "No OSF token provided. Set OSF_TOKEN in .env or pass token=")
+        self.base_url = (base_url or os.environ.get("OSF_API_BASE") or _DEFAULT_BASE).rstrip("/")
+        self._session = requests.Session()
+        self._session.headers.update({
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/vnd.api+json",
+            "Accept": "application/vnd.api+json",
+        })
 
-class OSFTransport:
-    """Low-level transport with retries, pagination, and normalized errors."""
+    # ------------------------------------------------------------------
+    # Low-level helpers
+    # ------------------------------------------------------------------
 
-    def __init__(
-        self,
-        settings: ResolvedSettings,
-        *,
-        max_retries: int = 2,
-        backoff_seconds: float = 0.4,
-    ):
-        self.settings = settings
-        self.base_url = settings.base_url
-        self.timeout = settings.timeout
-        self.max_retries = max_retries
-        self.backoff_seconds = backoff_seconds
-        self.session = requests.Session()
-        self.session.headers.update(
-            {
-                "Authorization": f"Bearer {settings.token}",
-                "Accept": "application/vnd.api+json",
-                "Content-Type": "application/vnd.api+json",
-            }
-        )
+    def _url(self, path: str) -> str:
+        path = path.strip("/")
+        return f"{self.base_url}/{path}/"
 
-    def build_url(self, path: str, *, base_url: str | None = None) -> str:
-        root = base_url or self.base_url
-        return urljoin(root, path.lstrip("/"))
-
-    def _error_message(self, response: requests.Response) -> str:
-        try:
-            body = response.json()
-        except ValueError:
-            text = response.text.strip()
-            return text or f"OSF request failed with status {response.status_code}"
-        errors = body.get("errors")
-        if isinstance(errors, list) and errors:
-            detail = errors[0].get("detail") or errors[0].get("title")
-            if detail:
-                return str(detail)
-        return f"OSF request failed with status {response.status_code}"
-
-    def _raise_response_error(self, response: requests.Response) -> None:
-        message = self._error_message(response)
-        status = response.status_code
-        if status in {401, 403}:
-            raise OSFAuthError(message, status_code=status)
-        if status == 404:
-            raise OSFNotFoundError(message, status_code=status)
-        if status == 429:
-            raise OSFRateLimitError(message, status_code=status)
-        if status in {400, 409, 422}:
-            raise OSFValidationError(message, status_code=status)
-        raise OSFTransportError(message, status_code=status)
-
-    def request(
-        self,
-        method: str,
-        path_or_url: str,
-        *,
-        base_url: str | None = None,
-        timeout: float | None = None,
-        **kwargs: Any,
-    ) -> requests.Response:
-        url = (
-            path_or_url
-            if path_or_url.startswith(("http://", "https://"))
-            else self.build_url(path_or_url, base_url=base_url)
-        )
-        retryable_method = method.upper() == "GET"
-        last_error: Exception | None = None
-
-        for attempt in range(self.max_retries + 1):
+    def _handle_response(self, resp: requests.Response) -> dict:
+        if resp.status_code == 204:
+            return {}
+        if resp.status_code >= 400:
             try:
-                response = self.session.request(
-                    method,
-                    url,
-                    timeout=timeout or self.timeout,
-                    **kwargs,
-                )
-            except requests.RequestException as exc:
-                last_error = exc
-                if retryable_method and attempt < self.max_retries:
-                    time.sleep(self.backoff_seconds * (2**attempt))
-                    continue
-                raise OSFTransportError(str(exc)) from exc
+                body = resp.json()
+                errors = body.get("errors", [])
+                detail = "; ".join(e.get("detail", str(e)) for e in errors) if errors else resp.text
+            except ValueError:
+                detail = resp.text
+            raise OSFClientError(resp.status_code, detail, resp)
+        return resp.json()
 
-            if response.status_code in {429, 500, 502, 503, 504} and retryable_method and attempt < self.max_retries:
-                time.sleep(self.backoff_seconds * (2**attempt))
-                continue
-            if response.ok:
-                return response
-            self._raise_response_error(response)
+    def get(self, path: str, params: dict | None = None) -> dict:
+        resp = self._session.get(self._url(path), params=params)
+        return self._handle_response(resp)
 
-        raise OSFTransportError(str(last_error) if last_error else "OSF request failed")
+    def post(self, path: str, payload: dict) -> dict:
+        resp = self._session.post(self._url(path), json=payload)
+        return self._handle_response(resp)
 
-    def request_json(self, method: str, path_or_url: str, **kwargs: Any) -> dict[str, Any]:
-        return self.request(method, path_or_url, **kwargs).json()
+    def patch(self, path: str, payload: dict) -> dict:
+        resp = self._session.patch(self._url(path), json=payload)
+        return self._handle_response(resp)
 
-    def paginate(self, path: str, **params: Any) -> Iterator[dict[str, Any]]:
-        next_url = self.build_url(path)
-        page_params: dict[str, Any] = dict(params)
-        while next_url:
-            body = self.request_json("GET", next_url, params=page_params)
-            for item in body.get("data", []):
-                yield item
-            next_url = body.get("links", {}).get("next")
-            page_params = {}
+    def put(self, path: str, payload: dict) -> dict:
+        resp = self._session.put(self._url(path), json=payload)
+        return self._handle_response(resp)
 
+    def delete(self, path: str) -> dict:
+        resp = self._session.delete(self._url(path))
+        return self._handle_response(resp)
 
-class _Service:
-    def __init__(self, client: "OSFClient"):
-        self.client = client
-        self.transport = client.transport
+    def paginate(self, path: str, params: dict | None = None) -> Iterator[dict]:
+        """Yield every resource across all pages."""
+        url = self._url(path)
+        while url:
+            resp = self._session.get(url, params=params)
+            body = self._handle_response(resp)
+            yield from body.get("data", [])
+            url = body.get("links", {}).get("next")
+            params = None  # params only on first request; next URL is absolute
 
+    # ------------------------------------------------------------------
+    # Users
+    # ------------------------------------------------------------------
 
-class UsersService(_Service):
-    def me(self, *, force_refresh: bool = False) -> User:
-        if force_refresh or self.client._me_cache is None:
-            data = self.transport.request_json("GET", "users/me/")["data"]
-            self.client._me_cache = User.from_api(data)
-        return self.client._me_cache
+    def me(self) -> dict:
+        """Get the authenticated user's profile."""
+        return self.get("users/me")["data"]
 
+    def get_user(self, user_id: str) -> dict:
+        return self.get(f"users/{user_id}")["data"]
 
-class ProjectsService(_Service):
-    def list(self) -> list[Project]:
-        user_id = self.client.users.me().id
-        return [
-            Project.from_api(item)
-            for item in self.transport.paginate(f"users/{user_id}/nodes/")
-        ]
+    # ------------------------------------------------------------------
+    # Nodes (projects / components)
+    # ------------------------------------------------------------------
 
-    def get(self, node_id: str) -> Project:
-        data = self.transport.request_json("GET", f"nodes/{node_id}/")["data"]
-        return Project.from_api(data)
+    def list_my_nodes(self, user_id: str | None = None) -> list[dict]:
+        """List the authenticated user's own nodes (not all public nodes)."""
+        uid = user_id or self.me()["id"]
+        return list(self.paginate(f"users/{uid}/nodes"))
 
-    def create(
-        self,
-        *,
-        title: str,
-        description: str = "",
-        public: bool = False,
-        category: str = "project",
-        tags: list[str] | None = None,
-    ) -> Project:
+    def list_nodes(self, **filters: str) -> list[dict]:
+        """Search all nodes with filters. Without filters this paginates ALL public nodes — use list_my_nodes() instead."""
+        if not filters:
+            return self.list_my_nodes()
+        params = {f"filter[{k}]": v for k, v in filters.items()}
+        return list(self.paginate("nodes", params or None))
+
+    def get_node(self, node_id: str, embed: list[str] | None = None) -> dict:
+        params: dict[str, str] = {}
+        if embed:
+            for e in embed:
+                params.setdefault("embed", e)
+            # JSON-API allows repeated embed params; use comma-sep as fallback
+            params = {"embed": ",".join(embed)} if len(embed) > 1 else params
+        return self.get(f"nodes/{node_id}", params or None)["data"]
+
+    def create_node(self, title: str, category: str = "project", description: str = "") -> dict:
         payload = {
             "data": {
                 "type": "nodes",
                 "attributes": {
                     "title": title,
-                    "description": description,
-                    "public": public,
                     "category": category,
+                    "description": description,
                 },
             }
         }
-        if tags:
-            payload["data"]["attributes"]["tags"] = tags
-        data = self.transport.request_json("POST", "nodes/", json=payload)["data"]
-        return Project.from_api(data)
+        return self.post("nodes", payload)["data"]
 
-    def update(self, node_id: str, **attrs: Any) -> Project:
-        payload = {"data": {"type": "nodes", "id": node_id, "attributes": attrs}}
-        data = self.transport.request_json("PATCH", f"nodes/{node_id}/", json=payload)["data"]
-        return Project.from_api(data)
+    def update_node(self, node_id: str, **attrs: Any) -> dict:
+        payload = {
+            "data": {
+                "type": "nodes",
+                "id": node_id,
+                "attributes": attrs,
+            }
+        }
+        return self.patch(f"nodes/{node_id}", payload)["data"]
 
-    def delete(self, node_id: str) -> None:
-        self.transport.request("DELETE", f"nodes/{node_id}/")
+    def delete_node(self, node_id: str) -> None:
+        self.delete(f"nodes/{node_id}")
 
+    # ------------------------------------------------------------------
+    # Node children / contributors / files
+    # ------------------------------------------------------------------
 
-class FilesService(_Service):
-    def list_providers(self, node_id: str) -> list[dict[str, Any]]:
-        return list(self.transport.paginate(f"nodes/{node_id}/files/"))
+    def list_node_children(self, node_id: str) -> list[dict]:
+        return list(self.paginate(f"nodes/{node_id}/children"))
 
-    def list_provider_names(self, node_id: str) -> list[str]:
-        names: list[str] = []
-        for item in self.list_providers(node_id):
-            attrs = item.get("attributes", {})
-            provider = attrs.get("name") or item.get("id")
-            if isinstance(provider, str) and provider and provider not in names:
-                names.append(provider)
-        return names
+    def list_node_contributors(self, node_id: str) -> list[dict]:
+        return list(self.paginate(f"nodes/{node_id}/contributors"))
 
-    def _list_provider_path(
-        self,
-        node_id: str,
-        *,
-        provider: str,
-        path: str = "/",
-    ) -> list[FileEntry]:
-        normalized = _normalize_remote_path(path)
-        provider_path = quote(normalized.lstrip("/"), safe="/")
-        endpoint = f"nodes/{node_id}/files/{provider}/"
-        if provider_path:
-            endpoint = f"{endpoint}{provider_path}"
-        return [
-            FileEntry.from_api(item, provider=provider)
-            for item in self.transport.paginate(endpoint)
-        ]
+    def list_node_files(self, node_id: str, provider: str = "osfstorage") -> list[dict]:
+        return list(self.paginate(f"nodes/{node_id}/files/{provider}"))
 
-    def list(
-        self,
-        node_id: str,
-        *,
-        provider: str = "osfstorage",
-        path: str = "/",
-        recursive: bool = False,
-    ) -> list[FileEntry]:
-        if not recursive:
-            return self._list_provider_path(node_id, provider=provider, path=path)
-        entries: list[FileEntry] = []
-        queue = [_normalize_remote_path(path)]
-        seen_paths: set[str] = set()
-        while queue:
-            current = queue.pop(0)
-            if current in seen_paths:
-                continue
-            seen_paths.add(current)
-            for entry in self._list_provider_path(node_id, provider=provider, path=current):
-                entries.append(entry)
-                if entry.kind == "folder" and entry.materialized_path:
-                    folder_path = _normalize_remote_path(entry.materialized_path)
-                    if folder_path not in seen_paths:
-                        queue.append(folder_path)
-        return entries
+    # ------------------------------------------------------------------
+    # Files
+    # ------------------------------------------------------------------
 
-    def list_all_providers(
-        self,
-        node_id: str,
-        *,
-        path: str = "/",
-        recursive: bool = False,
-    ) -> list[FileEntry]:
-        entries: list[FileEntry] = []
-        seen: set[tuple[str | None, str, str, str]] = set()
-        for provider in self.list_provider_names(node_id):
-            for entry in self.list(node_id, provider=provider, path=path, recursive=recursive):
-                identity = (
-                    entry.provider,
-                    entry.materialized_path or entry.name,
-                    entry.kind,
-                    entry.id,
-                )
-                if identity in seen:
-                    continue
-                seen.add(identity)
-                entries.append(entry)
-        return entries
+    def get_file(self, file_id: str) -> dict:
+        return self.get(f"files/{file_id}")["data"]
 
-    def get(
-        self,
-        node_id: str,
-        remote_path: str,
-        *,
-        provider: str = "osfstorage",
-    ) -> FileEntry:
-        normalized = _normalize_remote_path(remote_path)
-        if normalized == "/":
-            raise OSFValidationError("remote_path must not be '/'")
-        parent_path, name = _split_remote_path(normalized)
-        for item in self.list(node_id, provider=provider, path=parent_path):
-            if item.materialized_path and _normalize_remote_path(item.materialized_path) == normalized:
-                return item
-            if item.name == name:
-                return item
-        raise OSFNotFoundError(f"No OSF file found at '{normalized}'", status_code=404)
+    def download_file(self, file_id: str) -> bytes:
+        """Download file contents by file ID."""
+        meta = self.get_file(file_id)
+        download_url = meta["links"]["download"]
+        resp = self._session.get(download_url)
+        if resp.status_code >= 400:
+            raise OSFClientError(resp.status_code, f"Download failed: {resp.text}", resp)
+        return resp.content
 
-    def upload(
-        self,
-        node_id: str,
-        local_path: str | Path,
-        *,
-        provider: str = "osfstorage",
-        remote_name: str | None = None,
-        remote_path: str | None = None,
-    ) -> UploadResult:
-        if remote_name and remote_path:
-            raise OSFValidationError("Use either remote_name or remote_path, not both.")
-        source_path = Path(local_path)
-        target_path = remote_path or remote_name or source_path.name
-        parent_path, name = _split_remote_path(target_path)
-        folder_path = quote(parent_path.lstrip("/"), safe="/")
-        url = f"{WATERBUTLER_BASE}resources/{node_id}/providers/{provider}/"
-        if folder_path:
-            url = f"{url}{folder_path}/"
-        url = f"{url}?{urlencode({'kind': 'file', 'name': name})}"
-        with source_path.open("rb") as handle:
-            data = self.transport.request_json(
-                "PUT",
-                url,
-                data=handle,
-                headers={
-                    "Authorization": f"Bearer {self.client.settings.token}",
-                    "Content-Type": "application/octet-stream",
-                },
-            )
-        return UploadResult(
-            name=name,
-            provider=provider,
-            remote_path=_normalize_remote_path(target_path),
-            raw=data,
+    def upload_file(self, node_id: str, name: str, data: bytes,
+                    provider: str = "osfstorage") -> dict:
+        """Upload a file to a node's storage provider."""
+        upload_url = f"{self.base_url}/nodes/{node_id}/files/{provider}/"
+        # Get the upload link from the provider listing
+        resp = self._session.get(upload_url)
+        body = self._handle_response(resp)
+        upload_link = body["data"][0]["links"]["upload"] if body.get("data") else None
+        if not upload_link:
+            # Construct Waterbutler URL directly
+            upload_link = f"https://files.osf.io/v1/resources/{node_id}/providers/{provider}/"
+
+        resp = self._session.put(
+            upload_link,
+            params={"kind": "file", "name": name},
+            data=data,
+            headers={"Content-Type": "application/octet-stream"},
         )
+        if resp.status_code >= 400:
+            raise OSFClientError(resp.status_code, f"Upload failed: {resp.text}", resp)
+        return resp.json()
 
-    def download(self, download_url: str, dest: str | Path) -> Path:
-        destination = Path(dest)
-        response = self.transport.request("GET", download_url, stream=True)
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        with destination.open("wb") as handle:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    handle.write(chunk)
-        return destination
+    # ------------------------------------------------------------------
+    # Draft Registrations
+    # ------------------------------------------------------------------
 
-    def download_by_path(
+    def list_draft_registrations(self) -> list[dict]:
+        return list(self.paginate("draft_registrations"))
+
+    def get_draft_registration(self, draft_id: str) -> dict:
+        return self.get(f"draft_registrations/{draft_id}")["data"]
+
+    def create_draft_registration(
         self,
-        node_id: str,
-        remote_path: str,
-        *,
-        dest: str | Path | None = None,
-        provider: str = "osfstorage",
-    ) -> Path:
-        entry = self.get(node_id, remote_path, provider=provider)
-        if not entry.download_url:
-            raise OSFValidationError(f"No download link available for '{remote_path}'")
-        destination = Path(dest) if dest else Path(PurePosixPath(remote_path).name)
-        return self.download(entry.download_url, destination)
-
-
-class DraftsService(_Service):
-    def list(self, node_id: str) -> list[DraftRegistration]:
-        project = self.client.projects.get(node_id)
-        return [
-            DraftRegistration.from_api(item, project=project)
-            for item in self.transport.paginate(f"nodes/{node_id}/draft_registrations/")
-        ]
-
-    def get(self, draft_id: str) -> DraftRegistration:
-        data = self.transport.request_json("GET", f"draft_registrations/{draft_id}/")["data"]
-        related_project = data.get("relationships", {}).get("branched_from", {}).get("data", {})
-        project: Project | None = None
-        if related_project.get("id"):
-            try:
-                project = self.client.projects.get(related_project["id"])
-            except OSFTransportError:
-                project = None
-        return DraftRegistration.from_api(data, project=project)
-
-    def create(
-        self,
-        node_id: str,
-        *,
         schema_id: str,
-        registration_metadata: dict[str, Any] | None = None,
-    ) -> DraftRegistration:
+        title: str = "",
+        description: str = "",
+        node_id: str | None = None,
+    ) -> dict:
+        attrs: dict[str, Any] = {}
+        if title:
+            attrs["title"] = title
+        if description:
+            attrs["description"] = description
+
+        relationships: dict[str, Any] = {
+            "registration_schema": {
+                "data": {"type": "registration-schemas", "id": schema_id}
+            }
+        }
+        if node_id:
+            relationships["branched_from"] = {
+                "data": {"type": "nodes", "id": node_id}
+            }
+
         payload = {
             "data": {
                 "type": "draft_registrations",
-                "relationships": {
-                    "registration_schema": {
-                        "data": {"type": "registration_schemas", "id": schema_id}
-                    }
-                },
+                "attributes": attrs,
+                "relationships": relationships,
             }
         }
-        if registration_metadata:
-            payload["data"]["attributes"] = {
-                "registration_metadata": registration_metadata
-            }
-        data = self.transport.request_json(
-            "POST",
-            f"nodes/{node_id}/draft_registrations/",
-            json=payload,
-        )["data"]
-        return DraftRegistration.from_api(data, project=self.client.projects.get(node_id))
+        return self.post("draft_registrations", payload)["data"]
 
-    def list_all(self) -> list[DraftRegistration]:
-        items: list[DraftRegistration] = []
-        for project in self.client.projects.list():
-            for item in self.transport.paginate(f"nodes/{project.id}/draft_registrations/"):
-                items.append(DraftRegistration.from_api(item, project=project))
-        items.sort(key=lambda item: item.date_created or item.date_created_inferred or "", reverse=True)
-        return items
-
-    def update_metadata(
-        self,
-        draft_id: str,
-        *,
-        registration_metadata: dict[str, Any] | None = None,
-        registration_responses: dict[str, Any] | None = None,
-    ) -> DraftRegistration:
-        attributes: dict[str, Any] = {}
-        if registration_metadata is not None:
-            attributes["registration_metadata"] = registration_metadata
-        if registration_responses is not None:
-            attributes["registration_responses"] = registration_responses
-        if not attributes:
-            raise ValueError("one of registration_metadata or registration_responses is required")
+    def update_draft_registration(self, draft_id: str, **attrs: Any) -> dict:
         payload = {
             "data": {
                 "type": "draft_registrations",
                 "id": draft_id,
-                "attributes": attributes,
+                "attributes": attrs,
             }
         }
-        data = self.transport.request_json(
-            "PATCH",
-            f"draft_registrations/{draft_id}/",
-            json=payload,
-        )["data"]
-        related_project = data.get("relationships", {}).get("branched_from", {}).get("data", {})
-        project: Project | None = None
-        if related_project.get("id"):
-            try:
-                project = self.client.projects.get(related_project["id"])
-            except OSFTransportError:
-                project = None
-        return DraftRegistration.from_api(data, project=project)
+        return self.patch(f"draft_registrations/{draft_id}", payload)["data"]
 
+    # ------------------------------------------------------------------
+    # Registrations
+    # ------------------------------------------------------------------
 
-class RegistrationsService(_Service):
-    def list(self, node_id: str) -> list[Registration]:
-        project = self.client.projects.get(node_id)
-        return [
-            Registration.from_api(item, project=project)
-            for item in self.transport.paginate(f"nodes/{node_id}/registrations/")
-        ]
+    def list_registrations(self, **filters: str) -> list[dict]:
+        params = {f"filter[{k}]": v for k, v in filters.items()}
+        return list(self.paginate("registrations", params or None))
 
-    def get(self, registration_id: str) -> Registration:
-        data = self.transport.request_json("GET", f"registrations/{registration_id}/")["data"]
-        return Registration.from_api(data)
+    def get_registration(self, reg_id: str) -> dict:
+        return self.get(f"registrations/{reg_id}")["data"]
 
-    def list_all(self) -> list[Registration]:
-        items: list[Registration] = []
-        for project in self.client.projects.list():
-            for item in self.transport.paginate(f"nodes/{project.id}/registrations/"):
-                items.append(Registration.from_api(item, project=project))
-        items.sort(key=lambda item: item.date_registered or item.date_created or "", reverse=True)
-        return items
+    def list_user_registrations(self, user_id: str | None = None) -> list[dict]:
+        uid = user_id or self.me()["id"]
+        return list(self.paginate(f"users/{uid}/registrations"))
 
+    # ------------------------------------------------------------------
+    # Registration Schemas
+    # ------------------------------------------------------------------
 
-class ContributorsService(_Service):
-    def list(self, node_id: str, *, embed_users: bool = True) -> list[Contributor]:
-        params = {"embed": "users"} if embed_users else {}
-        return [
-            Contributor.from_api(item)
-            for item in self.transport.paginate(f"nodes/{node_id}/contributors/", **params)
-        ]
+    def list_registration_schemas(self) -> list[dict]:
+        return list(self.paginate("schemas/registrations"))
 
+    def get_registration_schema(self, schema_id: str) -> dict:
+        return self.get(f"schemas/registrations/{schema_id}")["data"]
 
-class SchemasService(_Service):
-    def list(self) -> list[RegistrationSchema]:
-        return [
-            RegistrationSchema.from_api(item)
-            for item in self.transport.paginate("schemas/registrations/")
-        ]
+    # ------------------------------------------------------------------
+    # Institutions
+    # ------------------------------------------------------------------
 
+    def list_user_institutions(self, user_id: str | None = None) -> list[dict]:
+        uid = user_id or self.me()["id"]
+        return list(self.paginate(f"users/{uid}/institutions"))
 
-class OSFClient:
-    """Primary OSF client exposing typed services and compatibility helpers."""
+    # ------------------------------------------------------------------
+    # Preprints
+    # ------------------------------------------------------------------
 
-    def __init__(
-        self,
-        *,
-        token: str | None = None,
-        profile: str | None = None,
-        config_path: str | Path | None = None,
-        base_url: str | None = None,
-        timeout: float | None = None,
-        legacy_credentials_path: str | Path | None = None,
-        settings: ResolvedSettings | None = None,
-    ):
-        self.settings = settings or resolve_settings(
-            token=token,
-            profile=profile,
-            config_path=config_path,
-            base_url=base_url,
-            timeout=timeout,
-            legacy_credentials_path=legacy_credentials_path,
-        )
-        self.transport = OSFTransport(self.settings)
-        self._me_cache: User | None = None
-        self.users = UsersService(self)
-        self.projects = ProjectsService(self)
-        self.files = FilesService(self)
-        self.drafts = DraftsService(self)
-        self.registrations = RegistrationsService(self)
-        self.contributors = ContributorsService(self)
-        self.schemas = SchemasService(self)
-
-    def whoami(self) -> User:
-        return self.users.me()
-
-    def me(self, *, force_refresh: bool = False) -> User:
-        return self.users.me(force_refresh=force_refresh)
-
-    def list_projects(self) -> list[Project]:
-        return self.projects.list()
-
-    def list_nodes(self) -> list[Project]:
-        return self.list_projects()
-
-    def get_project(self, node_id: str) -> Project:
-        return self.projects.get(node_id)
-
-    def get_node(self, node_id: str) -> Project:
-        return self.get_project(node_id)
-
-    def create_project(self, **kwargs: Any) -> Project:
-        return self.projects.create(**kwargs)
-
-    def update_project(self, node_id: str, **attrs: Any) -> Project:
-        return self.projects.update(node_id, **attrs)
-
-    def delete_project(self, node_id: str) -> None:
-        self.projects.delete(node_id)
-
-    def list_storage_providers(self, node_id: str) -> list[dict[str, Any]]:
-        return self.files.list_providers(node_id)
-
-    def list_file_providers(self, node_id: str) -> list[str]:
-        return self.files.list_provider_names(node_id)
-
-    def list_files(
-        self,
-        node_id: str,
-        provider: str = "osfstorage",
-        path: str = "/",
-        recursive: bool = False,
-    ) -> list[FileEntry]:
-        return self.files.list(node_id, provider=provider, path=path, recursive=recursive)
-
-    def list_node_files(
-        self,
-        node_id: str,
-        provider: str = "osfstorage",
-        path: str = "/",
-        recursive: bool = False,
-    ) -> list[FileEntry]:
-        return self.list_files(node_id, provider=provider, path=path, recursive=recursive)
-
-    def list_files_all_providers(
-        self,
-        node_id: str,
-        path: str = "/",
-        recursive: bool = False,
-    ) -> list[FileEntry]:
-        return self.files.list_all_providers(node_id, path=path, recursive=recursive)
-
-    def get_file(self, node_id: str, remote_path: str, provider: str = "osfstorage") -> FileEntry:
-        return self.files.get(node_id, remote_path, provider=provider)
-
-    def upload_file(
-        self,
-        node_id: str,
-        local_path: str | Path,
-        remote_name: str | None = None,
-        provider: str = "osfstorage",
-        remote_path: str | None = None,
-    ) -> UploadResult:
-        return self.files.upload(
-            node_id,
-            local_path,
-            provider=provider,
-            remote_name=remote_name,
-            remote_path=remote_path,
-        )
-
-    def download_file(self, download_url: str, dest: str | Path) -> Path:
-        return self.files.download(download_url, dest)
-
-    def download_file_by_path(
-        self,
-        node_id: str,
-        remote_path: str,
-        dest: str | Path | None = None,
-        provider: str = "osfstorage",
-    ) -> Path:
-        return self.files.download_by_path(node_id, remote_path, dest=dest, provider=provider)
-
-    def summarize_draft_registration(
-        self,
-        draft: dict[str, Any] | DraftRegistration,
-        *,
-        project: dict[str, Any] | Project | None = None,
-    ) -> DraftRegistration:
-        if isinstance(draft, DraftRegistration):
-            return draft
-        project_model: Project | None
-        if isinstance(project, Project) or project is None:
-            project_model = project
-        else:
-            project_model = Project.from_api(project)
-        return DraftRegistration.from_api(draft, project=project_model)
-
-    def list_draft_registrations(self, node_id: str) -> list[DraftRegistration]:
-        return self.drafts.list(node_id)
-
-    def get_draft_registration(self, draft_id: str) -> DraftRegistration:
-        return self.drafts.get(draft_id)
-
-    def create_draft_registration(
-        self,
-        node_id: str | None = None,
-        schema_id: str | None = None,
-        registration_metadata: dict[str, Any] | None = None,
-        title: str | None = None,
-        description: str | None = None,
-    ) -> DraftRegistration:
-        if not schema_id:
-            raise ValueError("schema_id is required")
-        if node_id is None:
-            payload = {
-                "data": {
-                    "type": "draft_registrations",
-                    "relationships": {
-                        "registration_schema": {
-                            "data": {"type": "registration_schemas", "id": schema_id}
-                        }
-                    },
-                    "attributes": {},
-                }
-            }
-            if title:
-                payload["data"]["attributes"]["title"] = title
-            if description:
-                payload["data"]["attributes"]["description"] = description
-            if registration_metadata:
-                payload["data"]["attributes"]["registration_metadata"] = registration_metadata
-            data = self.transport.request_json("POST", "draft_registrations/", json=payload)["data"]
-            return DraftRegistration.from_api(data)
-        return self.drafts.create(
-            node_id,
-            schema_id=schema_id,
-            registration_metadata=registration_metadata,
-        )
-
-    def list_all_draft_registrations(self) -> list[DraftRegistration]:
-        return self.drafts.list_all()
-
-    def update_draft_registration_metadata(
-        self,
-        draft_id: str,
-        registration_metadata: dict[str, Any],
-    ) -> DraftRegistration:
-        return self.drafts.update_metadata(
-            draft_id,
-            registration_metadata=registration_metadata,
-        )
-
-    def update_draft_registration_responses(
-        self,
-        draft_id: str,
-        registration_responses: dict[str, Any],
-    ) -> DraftRegistration:
-        return self.drafts.update_metadata(
-            draft_id,
-            registration_responses=registration_responses,
-        )
-
-    def update_draft_registration(self, draft_id: str, **attrs: Any) -> DraftRegistration:
-        metadata = attrs.pop("registration_metadata", None)
-        responses = attrs.pop("registration_responses", None)
-        if attrs:
-            payload = {
-                "data": {
-                    "type": "draft_registrations",
-                    "id": draft_id,
-                    "attributes": attrs,
-                }
-            }
-            data = self.transport.request_json(
-                "PATCH",
-                f"draft_registrations/{draft_id}/",
-                json=payload,
-            )["data"]
-            return DraftRegistration.from_api(data)
-        return self.drafts.update_metadata(
-            draft_id,
-            registration_metadata=metadata,
-            registration_responses=responses,
-        )
-
-    def list_registrations(self, node_id: str) -> list[Registration]:
-        return self.registrations.list(node_id)
-
-    def get_registration(self, registration_id: str) -> Registration:
-        return self.registrations.get(registration_id)
-
-    def list_all_registrations(self) -> list[Registration]:
-        return self.registrations.list_all()
-
-    def list_schemas(self) -> list[RegistrationSchema]:
-        return self.schemas.list()
-
-    def list_contributors(self, node_id: str, *, embed_users: bool = True) -> list[Contributor]:
-        return self.contributors.list(node_id, embed_users=embed_users)
-
-
-__all__ = [
-    "DEFAULT_API_BASE",
-    "DEFAULT_TIMEOUT",
-    "WATERBUTLER_BASE",
-    "OSFClient",
-    "OSFConfigError",
-    "infer_object_id_timestamp",
-]
+    def list_user_preprints(self, user_id: str | None = None) -> list[dict]:
+        uid = user_id or self.me()["id"]
+        return list(self.paginate(f"users/{uid}/preprints"))

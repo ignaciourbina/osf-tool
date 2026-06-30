@@ -1,4 +1,6 @@
-VENV     := .venv
+ROOT     := ../../..
+VENV     := $(ROOT)/venv
+REQS     := $(ROOT)/requirements.txt
 PYTHON   := $(VENV)/bin/python
 PIP      := $(VENV)/bin/pip
 PYTEST   := $(VENV)/bin/pytest
@@ -10,7 +12,7 @@ venv:
 	python3 -m venv $(VENV)
 
 install: venv
-	$(PIP) install -r requirements.txt
+	$(PIP) install -r $(REQS)
 
 test: install
 	$(PYTEST) tests/ -v
